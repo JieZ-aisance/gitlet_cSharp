@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <File Path="src\README.md" />
+    <Project Path="src/Gitlet.Cli/Gitlet.Cli.csproj" />
+    <Project Path="src/Gitlet.Core/Gitlet.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Gitlet.Core.Tests/Gitlet.Core.Tests.csproj" />
+  </Folder>
+</Solution>
