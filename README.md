@@ -1,1 +1,18 @@
-projet de gitlet ecrit en CSharp pour montrer ma compétence de developpement et testing 
+# gitlet en c# pour une demontration de competences en dev
+**Name: ** Jie
+
+## Les Classes
+### Commit
+#### Meaasge
+#### TimeStamp
+#### Parent
+
+
+### Branch
+### Repository  
+
+
+
+
+
+

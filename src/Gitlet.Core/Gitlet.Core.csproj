@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Include="obj\ErrorMessage.cs" />
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,5 @@
 <Solution>
   <Folder Name="/src/">
-    <File Path="src\README.md" />
     <Project Path="src/Gitlet.Cli/Gitlet.Cli.csproj" />
     <Project Path="src/Gitlet.Core/Gitlet.Core.csproj" />
   </Folder>

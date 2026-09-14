@@ -1,6 +1,6 @@
 namespace Gitlet.Core;
 
-public class Find
+public class Exceptions
 {
     
 }

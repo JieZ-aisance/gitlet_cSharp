@@ -1,6 +1,6 @@
 namespace Gitlet.Core;
 
-public class GlobalLog
+public class Staging
 {
     
 }

@@ -1,6 +1,6 @@
 namespace Gitlet.Core;
 
-public class Checkout
+public class Head
 {
     
 }
