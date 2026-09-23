@@ -1,4 +1,4 @@
-﻿namespace Gitlet.Core.Tests;
+﻿namespace Gitlet.Tests;
 
 public class UnitTest1
 {

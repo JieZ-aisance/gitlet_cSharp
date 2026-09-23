@@ -7,9 +7,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Gitlet.Core\Gitlet.Core.csproj" />
-  </ItemGroup>
-
-
 </Project>
