@@ -3,6 +3,7 @@
     <Project Path="src/Gitlet.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <File Path="tests\scratch.md" />
     <Project Path="tests/Gitlet.Tests.csproj" />
   </Folder>
 </Solution>

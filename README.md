@@ -36,5 +36,7 @@ commit ──→ blob（git中多一个tree）
 
 ![截屏2026-09-23 12.33.55.png](../../../var/folders/zb/9xsb0_8d76lb4m66ntd1nzk80000gn/T/TemporaryItems/NSIRD_screencaptureui_dFkkEq/%E6%88%AA%E5%B1%8F2026-09-23%2012.33.55.png)
 
+7，最终选择了课程给定的骨架，把java 换成c#
+
 
 
