@@ -24,8 +24,8 @@ public class Commit
     public string Message { get; set; }
     //public string Parents { get; set; }
     public List<string> ParentHashes { get; init; }//因为有两个父
-    public DateTimeOffset TimeStamp { get; set; }
-    //File映射
+    public DateTimeOffset TimeStamp { get; init; }
+    //File映射？？？这里是重点我还没完全想明白
     //commit 必须记录这次提交包含哪些文件、各自的 blob 哈希是什么。没有它,checkout 无法恢复文件。
     public SortedDictionary<string, string> Files { get; init; }
     
