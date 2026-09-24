@@ -5,10 +5,16 @@ public class GitletPaths
     //一个字段:工作目录,从构造函数传入,只读。
     private readonly string _workingDirectory;
     
+    //constructor
+    public GitletPaths(string workingDirectory)
+    {
+        _workingDirectory = workingDirectory;
+    }
+    
     //五个属性，它们的路径在gitlet上拼出来
     public string GitletDir => Path.Combine(_workingDirectory, ".gitlet");
     public string ObjectsDir => Path.Combine(GitletDir, "objects");
-    public string RefDirectory => Path.Combine(GitletDir, "refs", "heads");
+    public string RefHeadDirec => Path.Combine(GitletDir, "refs", "heads");
     
     public string HeadFile => Path.Combine(GitletDir, "HEAD");
     public string StagingFile => Path.Combine(GitletDir, "staging");
@@ -27,7 +33,7 @@ public class GitletPaths
     //返回 refs/heads/ 下对应文件的路径。
     public string BranchFile(string branchName)
     {
-        return Path.Combine(RefDirectory, branchName);
+        return Path.Combine(RefHeadDirec, branchName);
     }
     
     //此处学习
