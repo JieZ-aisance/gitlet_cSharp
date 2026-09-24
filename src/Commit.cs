@@ -9,16 +9,25 @@ namespace Gitlet;
  */
 public class Commit
 {
-    /**
-     * TODO: add instance variables here.
-     *
-     * List all instance variables of the Commit class here with a useful
-     * comment above them describing what that variable represents and how that
-     * variable is used. We've provided one example for `message`.
-     */
+    //字段 field 存数据的变量
+    //private readonly DateTime _timeStamp;
+    //属性 proprety 一对方法伪装成变量。
+    //public string Author{get;set};
+    //属性可以拆成字段+方法
+
+    //服务类和数据类
+    //服务类类似ObjectStore通常拆成字段，必须有构造函数，否则没法传数据
+    //数据类类似commit通常存成属性。没有构造函数
 
     /** The message of this Commit. */
-    private String message;
-
-    /* TODO: fill in the rest of this class. */
+    //属性
+    public string Message { get; set; }
+    //public string Parents { get; set; }
+    public List<string> ParentHashes { get; init; }//因为有两个父
+    public DateTimeOffset TimeStamp { get; set; }
+    //File映射
+    //commit 必须记录这次提交包含哪些文件、各自的 blob 哈希是什么。没有它,checkout 无法恢复文件。
+    public SortedDictionary<string, string> Files { get; init; }
+    
+ 
 }
