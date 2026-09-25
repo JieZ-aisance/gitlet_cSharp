@@ -15,6 +15,7 @@ public class Repository
     private readonly string _workingDirectory;
     private readonly GitletPaths _paths;
     private readonly ObjectStore _objects;
+    //把路径和被存储的数据都视为对象
 
     public Repository(string workingDirectory)
     {

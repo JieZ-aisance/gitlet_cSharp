@@ -30,7 +30,7 @@ public class ObjectStore
     {
         var hash = ComputeHash(type, content);//waiting for methode calcul de hash selon content
         
-        var path = _paths.ObjectPath(hash);//hash to path
+        var path = _paths.ObjectPath(hash);//hash to path，调用objectpath计算要写入的对象的路径
         
         if (!File.Exists(path))
         {

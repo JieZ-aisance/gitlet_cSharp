@@ -3,6 +3,31 @@ namespace Gitlet;
 public class GitletPaths
 {
     //一个字段:工作目录,从构造函数传入,只读。
+    /*
+     * 
+       Every 1.0s: tree .git                                                  
+       .git（属性GitletDir)
+       ├── COMMIT_EDITMSG
+       ├── HEAD（属性Head File）
+       ├── ORIG_HEAD
+       ├── config
+       ├── description
+       ├── index（属性StagingFile）
+       ├── info
+       │   └── exclude
+       ├── logs（gitlet中没有这一层）
+       │   ├── HEAD
+       │   └── refs (属性RefHeadDirec ）
+       │       └── heads
+       │           ├── dev （BrancheFile拼这个路径）
+       │           └── main
+       ├── objects（属性ObjectsDir）
+       │   ├── 0a
+       │   │   └── c1ae0ae201d8db7ac29015a6ba7494db37d59c （ObjectPath拼这个路径）
+       
+     */
+    
+    
     private readonly string _workingDirectory;
     
     //constructor
@@ -11,11 +36,11 @@ public class GitletPaths
         _workingDirectory = workingDirectory;
     }
     
-    //五个属性，它们的路径在gitlet上拼出来
+    //五个属性，它们的路径在gitlet上拼出来，固定路径
     public string GitletDir => Path.Combine(_workingDirectory, ".gitlet");
     public string ObjectsDir => Path.Combine(GitletDir, "objects");
     public string RefHeadDirec => Path.Combine(GitletDir, "refs", "heads");
-    
+     
     public string HeadFile => Path.Combine(GitletDir, "HEAD");
     public string StagingFile => Path.Combine(GitletDir, "staging");
     
@@ -23,6 +48,7 @@ public class GitletPaths
     //返回它在 objects 里的完整路径。
     //前 2 个字符是目录名,后 38 个是文件名。
     //你可以用 hash[..2] 和 hash[2..] 取这两段。
+    //可变路径
 
     public string ObjectPath(string hash)
     {
@@ -44,6 +70,4 @@ public class GitletPaths
     //路径存储为 ../../ce/013625030ba8dba906f756967f9e9ca394464a
     //如此存储的原因： 1）SHA-1 输出的分布是均匀的
     //2）对几万个对象的哈希可以把它们分在256（16^2）个子目录下，查找的时候先配子目录两位哈希
-    
-    
 }
