@@ -46,16 +46,16 @@ public class Repository
             Message = "initial commit",
             TimeStamp = new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero),
             ParentHashes = [],
-            Files = []
+            Files = []//这里是字典，必须选有序字典
         };
         
-        //4，序列化
+        //4，序列化，得到字符串
         var json = JsonSerializer.Serialize(initial);
         
-        //字符串转字节
+        //字符串转字节,这里是utf8编码，c#的默认编码是utf16，因此需要显示指定utf8
         byte[] bytes = Encoding.UTF8.GetBytes(json);
         
-        //
+        //交给objectstore
         string commitHash = _objects.Write("commit", bytes);
         
         //5,写入 默认分支refs/heads/master
@@ -65,4 +65,38 @@ public class Repository
         File.WriteAllText(_paths.HeadFile, "ref: refs/heads/main");
         
     }
+    
+    //add
+    public void Add(string path)
+    {
+        //get the current commit
+        
+        
+        //
+    }
+    
+    //Helper
+    private  Commit ReadCommit()
+    {
+        //HEAD中存储的是ref: refs/heads/master，是当前分支的string格式的路径
+        var head = File.ReadAllText(_paths.HeadFile);
+        const string prefix = "ref: refs/heads/";
+        string branchCurr = head[prefix.Length..];
+        
+        //拼路径
+        var currentbranche_path = _paths.BranchFile(branchCurr);
+        
+        //读分支文件,拿到 commit 哈希(string)
+        var commitHash = File.ReadAllText(currentbranche_path).Trim();
+        
+        //commit的哈希字符串换成字节
+        var commitCurr = _objects.Read(commitHash);
+        //把字节按照utf8编码成json
+        var commitCurrJson = Encoding.UTF8.GetString(commitCurr);
+        //反序列化，就是把json？
+        var commitCurrObj = JsonSerializer.Deserialize<Commit>(commitCurrJson);
+        
+        return commitCurrObj;
+    }
+    
 }
