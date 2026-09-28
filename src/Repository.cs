@@ -67,12 +67,57 @@ public class Repository
     }
     
     //add
-    public void Add(string path)
+    //gitlet中的add一次只能add一个文件，不能add多个文件
+    //具体表现为，不能一次add一个下边有多个文件的路径
+    public void Add(string filePath)
     {
+        // examiner si le chemin est bien ecrit
+
+        if (!File.Exists(Path.Combine(_workingDirectory, filePath)))
+        {
+            throw new GitletException("File does not exist.");
+        }
+    
+
+        var newHash = _objects.Write("blob", File.ReadAllBytes(Path.Combine(_workingDirectory, filePath)));
+        
+        var content = File.ReadAllBytes(Path.Combine(_workingDirectory, filePath));
+        
         //get the current commit
+        var commitCurr = ReadCommit();
         
+        var commitCurrFiles = commitCurr.Files; 
         
-        //
+        //解析commit中的信息，看Files属性中存了哪些文件名和内容hash
+
+        
+        //read staging
+        var staging = ReadStaging();
+        
+        staging.Removals.Remove(filePath);
+        
+        //cheak staging file
+        var stagingAdditions = staging.Additions;   
+        //<key, value>
+        //key: file name
+        //value: blob hash
+        
+        //if current
+        if (commitCurrFiles.TryGetValue(filePath, out string? oldHash) && oldHash == newHash)
+        {
+            // 在 commit 里,且内容一样 → 没改过,移除
+            stagingAdditions.Remove(filePath);
+        }
+        else
+        {
+            // 不在 commit 里,或者内容变了 → 加入/覆盖
+            stagingAdditions[filePath] = newHash;
+        }
+        
+        string json = JsonSerializer.Serialize(staging);
+        File.WriteAllText(_paths.StagingFile, json);
+
+
     }
     
     //Helper
@@ -97,6 +142,23 @@ public class Repository
         var commitCurrObj = JsonSerializer.Deserialize<Commit>(commitCurrJson);
         
         return commitCurrObj;
+    }
+    
+    private Staging ReadStaging()
+    {
+        if (!File.Exists(_paths.StagingFile))
+        {
+            return new Staging
+            {
+                Additions = [],
+                Removals = []
+            };
+        }
+
+        string json = File.ReadAllText(_paths.StagingFile);
+        
+        var stagingCurr = JsonSerializer.Deserialize<Staging>(json);
+        return  stagingCurr;
     }
     
 }

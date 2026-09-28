@@ -16,6 +16,7 @@ public static class Program
                 repo.Init();
                 break;
             case "add":
+                repo.Add(args[1]);
                 break;
             case "commit":
                 break;
