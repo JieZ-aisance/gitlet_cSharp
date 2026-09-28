@@ -128,14 +128,15 @@ public class Repository
         const string prefix = "ref: refs/heads/";
         string branchCurr = head[prefix.Length..];
         
-        //拼路径
+        //拼路径，拼到object下对应的文件的路径
         var currentbranche_path = _paths.BranchFile(branchCurr);
         
-        //读分支文件,拿到 commit 哈希(string)
+        //读分支文件,拿到 commit 哈希(string)？这是读取了refs/heads/分支名中的纯文本哈希字符串么？
         var commitHash = File.ReadAllText(currentbranche_path).Trim();
         
-        //commit的哈希字符串换成字节
+        //根据commit的hash值去读object路径下的对应的文件的内容
         var commitCurr = _objects.Read(commitHash);
+        
         //把字节按照utf8编码成json
         var commitCurrJson = Encoding.UTF8.GetString(commitCurr);
         //反序列化，就是把json？
@@ -160,5 +161,4 @@ public class Repository
         var stagingCurr = JsonSerializer.Deserialize<Staging>(json);
         return  stagingCurr;
     }
-    
 }

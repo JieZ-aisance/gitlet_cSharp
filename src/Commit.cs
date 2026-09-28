@@ -42,5 +42,4 @@ public class Commit
     //关于为什么选择SortedDictionnary而不是普通字典，因为files要参与哈希计算
     //具体以为在序列化那一段，我们处理的数据结构从无序的字典变成了有序的字符串
     //  var json = JsonSerializer.Serialize(initial); 
- 
 }

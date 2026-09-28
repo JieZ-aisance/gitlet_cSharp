@@ -46,6 +46,9 @@ public class ObjectStore
     public byte[] Read(string hash)
     {
         return File.ReadAllBytes(_paths.ObjectPath(hash));
+        //这里之所以不用File.ReadAllText(path) ，是因为blob不一定是字符串
+        //而commit是可以的，可以使用File.ReadAllText(path) ，
+        //然后在readcommit中直接用json反序列化出commit对象
     }
     
     //Existe
