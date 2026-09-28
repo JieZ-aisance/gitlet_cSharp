@@ -89,7 +89,6 @@ public class Repository
         var commitCurrFiles = commitCurr.Files; 
         
         //解析commit中的信息，看Files属性中存了哪些文件名和内容hash
-
         
         //read staging
         var staging = ReadStaging();
@@ -143,6 +142,23 @@ public class Repository
         var commitCurrObj = JsonSerializer.Deserialize<Commit>(commitCurrJson);
         
         return commitCurrObj;
+    }
+
+    private string GetCommitHash()
+    {
+        //HEAD中存储的是ref: refs/heads/master，是当前分支的string格式的路径
+        var head = File.ReadAllText(_paths.HeadFile);
+        const string prefix = "ref: refs/heads/";
+        string branchCurr = head[prefix.Length..];
+        
+        //拼路径，拼到object下对应的文件的路径
+        var currentbranche_path = _paths.BranchFile(branchCurr);
+        
+        //读分支文件,拿到 commit 哈希(string)？这是读取了refs/heads/分支名中的纯文本哈希字符串么？
+        var commitHash = File.ReadAllText(currentbranche_path).Trim();
+        
+        return commitHash;
+        
     }
     
     private Staging ReadStaging()
