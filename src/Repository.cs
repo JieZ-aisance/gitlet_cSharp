@@ -69,7 +69,7 @@ public class Repository
     //add
     //gitlet中的add一次只能add一个文件，不能add多个文件
     //具体表现为，不能一次add一个下边有多个文件的路径
-    public void Add(string filePath)
+    public void GitletAdd(string filePath)
     {
         // examiner si le chemin est bien ecrit
 
@@ -80,6 +80,8 @@ public class Repository
     
 
         var newHash = _objects.Write("blob", File.ReadAllBytes(Path.Combine(_workingDirectory, filePath)));
+        //if we wamt to have tree like a real git in the future, maybe we can make a class of Enum( blob, commit, tree)
+        //instead of sting here
         
         var content = File.ReadAllBytes(Path.Combine(_workingDirectory, filePath));
         
@@ -93,7 +95,7 @@ public class Repository
         //read staging
         var staging = ReadStaging();
         
-        staging.Removals.Remove(filePath);
+        staging.Removals.Remove(filePath);//避免当前文件同时出现在添加和删除里
         
         //cheak staging file
         var stagingAdditions = staging.Additions;   
@@ -116,6 +118,98 @@ public class Repository
         string json = JsonSerializer.Serialize(staging);
         File.WriteAllText(_paths.StagingFile, json);
 
+    }
+    
+    
+    //Commit
+    //不改变commit对象而是新建一个
+    public void GitletCommit(string message)
+    {
+        //检查消息非空、暂存区非空
+        if (string.IsNullOrEmpty(message) )
+        {
+            throw new GitletException("Please enter a commit message.");
+        }
+
+        if (ReadStaging().Additions.Count == 0 && ReadStaging().Removals.Count == 0)
+        {
+            throw new GitletException("Please add or delete some files to commit.");
+        }
+        
+        //读暂存区
+        var staging = ReadStaging();
+        
+        //读当前commit hash
+        var commitParent = ReadCommit();
+        
+        var commitParentHash = GetCommitHash();
+        
+        // var commitParentFiles = commitParent.Files; 错误写法
+        var commitParentFiles = new SortedDictionary<string, string>(commitParent.Files);
+        
+        // 暂存的添加 → 覆盖或新增
+        foreach (var pair in staging.Additions)
+        {
+            commitParentFiles[pair.Key] = pair.Value;
+        }
+
+        // 暂存的删除 → 移除
+        foreach (string name in staging.Removals)
+        {
+            commitParentFiles.Remove(name);
+        }
+        
+        //new commit
+        var newCommit = new Commit
+        {
+            Message = message,
+            TimeStamp = DateTimeOffset.Now,
+            ParentHashes = [commitParentHash],
+            Files = commitParentFiles
+        };
+        
+        //
+        var json = JsonSerializer.Serialize(newCommit);
+        
+        //字符串转字节,这里是utf8编码，c#的默认编码是utf16，因此需要显示指定utf8
+        byte[] bytes = Encoding.UTF8.GetBytes(json);
+        
+        //交给objectstore
+        string commitHash = _objects.Write("commit", bytes);
+        
+        //5,写入 默认分支refs/heads/master
+        File.WriteAllText(_paths.BranchFile("main"), commitHash);
+        
+        
+        //clean staging
+        staging.Additions.Clear();
+        staging.Removals.Clear();
+        
+        string stagingJson = JsonSerializer.Serialize(staging);
+        File.WriteAllText(_paths.StagingFile, stagingJson);
+    }
+    
+    //rm delete
+    //如果该文件当前被暂存以待添加,取消暂存。
+    //如果该文件被当前 commit 跟踪,把它暂存以待删除,
+    //并且如果用户还没删,就从工作目录删除它(如果没被当前 commit 跟踪,就不要删)。
+    public void Delete(string filePath)
+    {
+        var staging = ReadStaging();
+        var commitCurr = ReadCommit();
+        
+        var isStaged = staging.Additions.ContainsKey(filePath);
+        var isCommitted = commitCurr.Files.ContainsKey(filePath);
+        
+        //fall
+        if (!isStaged && !isCommitted)
+        {
+            throw new GitletException("Cannot delete.");
+        }
+        
+        
+        // string json = JsonSerializer.Serialize(staging);
+        // File.WriteAllText(_paths.StagingFile, json);
 
     }
     
@@ -144,6 +238,7 @@ public class Repository
         return commitCurrObj;
     }
 
+   
     private string GetCommitHash()
     {
         //HEAD中存储的是ref: refs/heads/master，是当前分支的string格式的路径

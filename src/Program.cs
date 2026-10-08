@@ -16,9 +16,10 @@ public static class Program
                 repo.Init();
                 break;
             case "add":
-                repo.Add(args[1]);
+                repo.GitletAdd(args[1]);
                 break;
             case "commit":
+                repo.GitletCommit(args[1]);
                 break;
             default:
                 Console.WriteLine("Unknown command");
