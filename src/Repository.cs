@@ -193,7 +193,7 @@ public class Repository
     //如果该文件当前被暂存以待添加,取消暂存。
     //如果该文件被当前 commit 跟踪,把它暂存以待删除,
     //并且如果用户还没删,就从工作目录删除它(如果没被当前 commit 跟踪,就不要删)。
-    public void Delete(string filePath)
+    public void GitletDelete(string filePath)
     {
         var staging = ReadStaging();
         var commitCurr = ReadCommit();
@@ -207,9 +207,26 @@ public class Repository
             throw new GitletException("Cannot delete.");
         }
         
+        //in staging
+        if (isStaged)
+        {
+            staging.Additions.Remove(filePath);
+        }
         
-        // string json = JsonSerializer.Serialize(staging);
-        // File.WriteAllText(_paths.StagingFile, json);
+        //committed
+        if (isCommitted)
+        {
+            staging.Removals.Add(filePath);
+
+            string fullPath = Path.Combine(_workingDirectory, filePath);
+            if (File.Exists(fullPath))
+            {
+                File.Delete(fullPath);
+            }
+        }
+        
+        string json = JsonSerializer.Serialize(staging);
+        File.WriteAllText(_paths.StagingFile, json);
 
     }
     

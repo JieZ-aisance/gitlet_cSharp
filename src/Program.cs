@@ -21,11 +21,13 @@ public static class Program
             case "commit":
                 repo.GitletCommit(args[1]);
                 break;
+            case "rm":
+                repo.GitletDelete(args[1]);
+                break;
+            
             default:
                 Console.WriteLine("Unknown command");
                 break;
-            
-            
         }
     }
     
