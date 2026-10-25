@@ -24,6 +24,9 @@ public static class Program
             case "rm":
                 repo.GitletDelete(args[1]);
                 break;
+            case "log":
+                Console.Write(repo.GitletLog());
+                break;
             
             default:
                 Console.WriteLine("Unknown command");

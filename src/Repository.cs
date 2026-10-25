@@ -230,6 +230,23 @@ public class Repository
 
     }
     
+    //log
+    //打印日志信息
+    //first we write the log with merge information
+    //格式
+    // ===                                              ← 固定的分隔线
+    //    commit 3e8bf1d794ca2e9ef8a4007275acf3751c7170ff  ← 这个 commit 的哈希(循环变量 hash)
+    // Date: Thu Nov 9 17:01:33 2017 -0800              ← commit.TimeStamp,转本地时间再格式化
+    //     Another commit message.                          ← commit.Message
+    // ← 空行
+    
+    public string GitletLog()
+    {
+        //we will return in sting insted of print it here 
+        //in order to facilitate the test
+        return string.Empty;
+    }
+    
     //Helper
     private  Commit ReadCommit()
     {
