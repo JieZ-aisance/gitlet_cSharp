@@ -204,7 +204,7 @@ public class Repository
         //fall
         if (!isStaged && !isCommitted)
         {
-            throw new GitletException("Cannot delete.");
+            throw new GitletException("No reason to remove the file.");
         }
         
         //in staging
