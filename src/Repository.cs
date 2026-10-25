@@ -244,7 +244,25 @@ public class Repository
     {
         //we will return in sting insted of print it here 
         //in order to facilitate the test
-        return string.Empty;
+        const int LOGTOPRINT = 3;
+        var infomationToPrint = "";
+        var compteur = 0;
+        while (compteur < LOGTOPRINT)
+        {
+            var commit = ReadCommit();
+            
+            var currentHash = commit.ParentHashes[0];
+            
+            var date = commit.TimeStamp.ToString("ddd MMM dd HH:mm:ss yyyy -0800");
+            
+            var message = commit.Message;
+            
+            infomationToPrint = infomationToPrint + "============\n";
+
+            compteur++;
+        }
+
+        return  infomationToPrint;
     }
     
     //Helper
@@ -271,8 +289,16 @@ public class Repository
         
         return commitCurrObj;
     }
+    
+    //overload in order to get the hash of the commit's father hash
+    private Commit ReadCommit(string hash)
+    {
+        byte[] bytes = _objects.Read(hash);
+        string json = Encoding.UTF8.GetString(bytes);
+        return JsonSerializer.Deserialize<Commit>(json)!;
+    }
 
-   
+
     private string GetCommitHash()
     {
         //HEAD中存储的是ref: refs/heads/master，是当前分支的string格式的路径
