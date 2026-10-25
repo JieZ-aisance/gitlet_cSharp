@@ -244,23 +244,37 @@ public class Repository
     {
         //we will return in sting insted of print it here 
         //in order to facilitate the test
-        const int LOGTOPRINT = 3;
+    
         var infomationToPrint = "";
-        var compteur = 0;
-        while (compteur < LOGTOPRINT)
-        {
-            var commit = ReadCommit();
-            
-            var currentHash = commit.ParentHashes[0];
-            
-            var date = commit.TimeStamp.ToString("ddd MMM dd HH:mm:ss yyyy -0800");
-            
-            var message = commit.Message;
-            
-            infomationToPrint = infomationToPrint + "============\n";
+    
+       //first
+        var commitOne = ReadCommit();
 
-            compteur++;
-        }
+        var currentHashOne = GetCommitHash();
+        
+        var dateOne = commitOne.TimeStamp.ToString("ddd MMM dd HH:mm:ss yyyy -0800");
+        
+        var messageOne = commitOne.Message;
+        
+        infomationToPrint = infomationToPrint + "============\n"+"commit  "+ currentHashOne + "\n" + dateOne +"\n" + messageOne + "\n";
+        
+        //second
+        var commitTwo = ReadCommit(currentHashOne);
+        
+        var currentHashTwo = commitOne.ParentHashes[0];
+        
+        var dateTwo = commitTwo.TimeStamp.ToString("ddd MMM dd HH:mm:ss yyyy -0800");
+        
+        var messageTwo = commitTwo.Message;
+        
+        infomationToPrint = infomationToPrint + "============\n"+"commit  "+ currentHashTwo + "\n" + dateTwo +"\n" + messageTwo + "\n";
+
+        //third
+        var commitThree = ReadCommit(currentHashTwo);
+        var currentHashThree = commitTwo.ParentHashes[0];
+        var dateThree = commitThree.TimeStamp.ToString("ddd MMM dd HH:mm:ss yyyy -0800");
+        var messageThree = commitThree.Message;
+        infomationToPrint = infomationToPrint + "============\n"+"commit  "+ currentHashThree + "\n" + dateThree +"\n" + messageThree + "\n";
 
         return  infomationToPrint;
     }
