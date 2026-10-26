@@ -250,12 +250,15 @@ public class Repository
        
        var CurrentCommit = ReadCommit();
        
+       var CurrentHash = GetCommitHash();
+       
        while (true)
        {
            //info to print
-           var CurrentHash = CurrentCommit.ParentHashes[0];
+           
            var date = CurrentCommit.TimeStamp.ToLocalTime()
                .ToString("ddd MMM d HH:mm:ss yyyy zzz", CultureInfo.InvariantCulture); 
+           
            var message = CurrentCommit.Message;
            
            //apprend
@@ -271,6 +274,8 @@ public class Repository
            
            CurrentCommit = ReadCommit(CurrentHash);
            
+           CurrentHash = CurrentCommit.ParentHashes[0];
+           
            if (CurrentCommit.ParentHashes.Count == 0)
            {
                break;
@@ -279,6 +284,15 @@ public class Repository
        
         return  infomationToPrint.ToString();
     }
+    
+    //global log
+    public string GitletGlobalLog()
+    {
+        //
+        return string.Empty;
+    }
+    
+    
     
     //Helper
     private  Commit ReadCommit()
