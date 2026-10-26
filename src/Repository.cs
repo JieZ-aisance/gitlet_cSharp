@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text;
+using System.Globalization;
 
 namespace Gitlet;
 //TODO: any imports you need here
@@ -244,39 +245,39 @@ public class Repository
     {
         //we will return in sting insted of print it here 
         //in order to facilitate the test
-    
-        var infomationToPrint = "";
-    
-       //first
-        var commitOne = ReadCommit();
 
-        var currentHashOne = GetCommitHash();
-        
-        var dateOne = commitOne.TimeStamp.ToString("ddd MMM dd HH:mm:ss yyyy -0800");
-        
-        var messageOne = commitOne.Message;
-        
-        infomationToPrint = infomationToPrint + "============\n"+"commit  "+ currentHashOne + "\n" + dateOne +"\n" + messageOne + "\n";
-        
-        //second
-        var commitTwo = ReadCommit(currentHashOne);
-        
-        var currentHashTwo = commitOne.ParentHashes[0];
-        
-        var dateTwo = commitTwo.TimeStamp.ToString("ddd MMM dd HH:mm:ss yyyy -0800");
-        
-        var messageTwo = commitTwo.Message;
-        
-        infomationToPrint = infomationToPrint + "============\n"+"commit  "+ currentHashTwo + "\n" + dateTwo +"\n" + messageTwo + "\n";
-
-        //third
-        var commitThree = ReadCommit(currentHashTwo);
-        var currentHashThree = commitTwo.ParentHashes[0];
-        var dateThree = commitThree.TimeStamp.ToString("ddd MMM dd HH:mm:ss yyyy -0800");
-        var messageThree = commitThree.Message;
-        infomationToPrint = infomationToPrint + "============\n"+"commit  "+ currentHashThree + "\n" + dateThree +"\n" + messageThree + "\n";
-
-        return  infomationToPrint;
+       var infomationToPrint = new StringBuilder();//optimisation var infomationToPrint = "";
+       
+       var CurrentCommit = ReadCommit();
+       
+       while (true)
+       {
+           //info to print
+           var CurrentHash = CurrentCommit.ParentHashes[0];
+           var date = CurrentCommit.TimeStamp.ToLocalTime()
+               .ToString("ddd MMM d HH:mm:ss yyyy zzz", CultureInfo.InvariantCulture); 
+           var message = CurrentCommit.Message;
+           
+           //apprend
+           infomationToPrint.Append("==============\n");
+           infomationToPrint.Append("commit  ");
+           infomationToPrint.Append(CurrentHash);
+           infomationToPrint.Append("\n");
+           infomationToPrint.Append("Date ");
+           infomationToPrint.Append(date);
+           infomationToPrint.Append("\n");
+           infomationToPrint.Append(message);
+           infomationToPrint.Append("\n");
+           
+           CurrentCommit = ReadCommit(CurrentHash);
+           
+           if (CurrentCommit.ParentHashes.Count == 0)
+           {
+               break;
+           }
+       }
+       
+        return  infomationToPrint.ToString();
     }
     
     //Helper

@@ -23,7 +23,7 @@ public class Commit
     //属性
     public string Message { get; set; }
     //public string Parents { get; set; }
-    public List<string> ParentHashes { get; init; }//因为有两个父
+    public List<string> ParentHashes { get; init; }//因为有两个父，这是有merge的情况，否则只有一个父
     public DateTimeOffset TimeStamp { get; init; }
     //File映射？？？这里是重点我还没完全想明白
     //commit 必须记录这次提交包含哪些文件、各自的 blob 哈希是什么。没有它,checkout 无法恢复文件。
