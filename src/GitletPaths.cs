@@ -39,6 +39,12 @@ public class GitletPaths
     //五个属性，它们的路径在gitlet上拼出来，固定路径
     public string GitletDir => Path.Combine(_workingDirectory, ".gitlet");
     public string ObjectsDir => Path.Combine(GitletDir, "objects");
+    
+    //spearate blob and commit for gloabl log
+    public string BlobDir => Path.Combine(ObjectsDir, "blobs");
+   
+    public string CommitDir => Path.Combine(ObjectsDir, "commits");
+    
     public string RefHeadDirec => Path.Combine(GitletDir, "refs", "heads");
      
     public string HeadFile => Path.Combine(GitletDir, "HEAD");
@@ -50,9 +56,17 @@ public class GitletPaths
     //你可以用 hash[..2] 和 hash[2..] 取这两段。
     //可变路径
 
-    public string ObjectPath(string hash)
+    public string ObjectPath(string type, string hash)
     {
-        return Path.Combine(ObjectsDir, hash[..2], hash[2..]);
+        if (type == "blob")
+        {
+            return Path.Combine(BlobDir, hash[..2], hash[2..]);
+        }
+        if (type == "commit")
+        {
+            return Path.Combine(CommitDir, hash[..2], hash[2..]);
+        }
+        throw new ArgumentException($"Unknown object kind: {type}");
     }
         
     //BranchFile(string branchName) — 给分支名,

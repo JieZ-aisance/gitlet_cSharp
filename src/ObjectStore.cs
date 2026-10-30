@@ -30,7 +30,7 @@ public class ObjectStore
     {
         var hash = ComputeHash(type, content);//waiting for methode calcul de hash selon content
         
-        var path = _paths.ObjectPath(hash);//hash to path，调用objectpath计算要写入的对象的路径
+        var path = _paths.ObjectPath(type, hash);//hash to path，调用objectpath计算要写入的对象的路径
         
         if (!File.Exists(path))
         {
@@ -43,18 +43,18 @@ public class ObjectStore
     }
     
     //Read
-    public byte[] Read(string hash)
+    public byte[] Read(string type,string hash)
     {
-        return File.ReadAllBytes(_paths.ObjectPath(hash));
+        return File.ReadAllBytes(_paths.ObjectPath(type, hash));
         //这里之所以不用File.ReadAllText(path) ，是因为blob不一定是字符串
         //而commit是可以的，可以使用File.ReadAllText(path) ，
         //然后在readcommit中直接用json反序列化出commit对象
     }
     
     //Existe
-    public bool Exists(string hash)
+    public bool Exists(string type, string hash)
     {
-        return File.Exists(_paths.ObjectPath(hash));
+        return File.Exists(_paths.ObjectPath(type, hash));
     }
     //Helpers
     private static string ComputeHash(string type, byte[] content)

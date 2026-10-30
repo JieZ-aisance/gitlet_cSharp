@@ -27,6 +27,9 @@ public static class Program
             case "log":
                 Console.Write(repo.GitletLog());
                 break;
+            case "global-log" :
+                Console.Write(repo.GitletGlobalLog());
+                break;
             
             default:
                 Console.WriteLine("Unknown command");

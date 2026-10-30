@@ -272,24 +272,58 @@ public class Repository
            infomationToPrint.Append(message);
            infomationToPrint.Append("\n");
            
-           CurrentCommit = ReadCommit(CurrentHash);
-           
-           CurrentHash = CurrentCommit.ParentHashes[0];
+           // CurrentCommit = ReadCommit(CurrentHash);
+           //
+           // CurrentHash = CurrentCommit.ParentHashes[0];
            
            if (CurrentCommit.ParentHashes.Count == 0)
            {
                break;
            }
+           
+           CurrentHash = CurrentCommit.ParentHashes[0];
+           CurrentCommit = ReadCommit(CurrentHash);
        }
        
         return  infomationToPrint.ToString();
     }
     
     //global log
+    //直接扫commits目录
+
     public string GitletGlobalLog()
     {
         //
-        return string.Empty;
+        var infomationToPrint = new StringBuilder();
+        foreach (var commit in Directory.GetDirectories(_paths.CommitDir))
+        {
+            var prefixe = Path.GetFileName(commit);
+
+            foreach (var file in Directory.GetFiles(commit))
+            {
+                var hashtoprint = prefixe+Path.GetFileName(file);
+                var CurrentCommit = ReadCommit(hashtoprint);
+                
+                var date = CurrentCommit.TimeStamp.ToLocalTime()
+                    .ToString("ddd MMM d HH:mm:ss yyyy zzz", CultureInfo.InvariantCulture); 
+           
+                var message = CurrentCommit.Message;
+                
+           
+                //apprend
+                infomationToPrint.Append("==============\n");
+                infomationToPrint.Append("commit  ");
+                infomationToPrint.Append(hashtoprint);
+                infomationToPrint.Append("\n");
+                infomationToPrint.Append("Date ");
+                infomationToPrint.Append(date);
+                infomationToPrint.Append("\n");
+                infomationToPrint.Append(message);
+                infomationToPrint.Append("\n");
+                
+            }
+        }
+        return infomationToPrint.ToString();
     }
     
     
@@ -309,7 +343,7 @@ public class Repository
         var commitHash = File.ReadAllText(currentbranche_path).Trim();
         
         //根据commit的hash值去读object路径下的对应的文件的内容
-        var commitCurr = _objects.Read(commitHash);
+        var commitCurr = _objects.Read("commit",commitHash);
         
         //把字节按照utf8编码成json
         var commitCurrJson = Encoding.UTF8.GetString(commitCurr);
@@ -322,7 +356,7 @@ public class Repository
     //overload in order to get the hash of the commit's father hash
     private Commit ReadCommit(string hash)
     {
-        byte[] bytes = _objects.Read(hash);
+        byte[] bytes = _objects.Read("commit",hash);
         string json = Encoding.UTF8.GetString(bytes);
         return JsonSerializer.Deserialize<Commit>(json)!;
     }
