@@ -1,7 +1,8 @@
 # gitlet en c# pour une demontration de competences en dev
 ### Author:Jie
+### Updated:2026-10-30
 
-## 🇬🇧Implemented commands🇬🇧
+## 🇬🇧Implemented commands🇬🇧 
 
 1. init
 2. add
@@ -52,8 +53,6 @@ Clonez la branche `dev` dans un dossier local vide, installez le SDK .NET 10, pu
     dotnet run -- find "<message du commit>"
 
 Pour créer des fichiers de test, utilisez l'outil de votre choix (nano, vim, etc.).
-
-
 ===========================================================================================
 ## 🇨🇳已经开发完的功能：🇨🇳
 1.init
