@@ -1,21 +1,83 @@
 # gitlet en c# pour une demontration de competences en dev
 ### Author:Jie
 
-## Les Classes
-### 0, Blob
-### 1, Commit
-##### Message
-##### TimeStamp
-##### Parent
-### 2, Branch
-### 3, Head
-### 4, Staging
-### 5, Log
-### 6, Exceptions
-### 7, Repository
- 
-#### les actions telles que add, find, init sont dans cette classe.
+## 🇬🇧Implemented commands🇬🇧
 
+1. init
+2. add
+3. commit
+4. rm
+5. log
+6. global-log
+7. find
+
+## Try it
+
+Clone the `dev` branch into a clean local folder, install the .NET 10 SDK, then run the following from the `src` directory:
+
+    dotnet clean
+    dotnet build
+    dotnet run -- init
+    dotnet run -- add <file name>
+    dotnet run -- commit "<commit message>"
+    dotnet run -- rm <file name>
+    dotnet run -- log
+    dotnet run -- global-log
+    dotnet run -- find "<commit message>"
+
+Use whichever tool you prefer (nano, vim, etc.) to create test files.
+===========================================================================================
+## 🇫🇷Commandes implémentées🇫🇷
+
+1. init
+2. add
+3. commit
+4. rm
+5. log
+6. global-log
+7. find
+
+## Essayer
+
+Clonez la branche `dev` dans un dossier local vide, installez le SDK .NET 10, puis exécutez depuis le répertoire `src` :
+
+    dotnet clean
+    dotnet build
+    dotnet run -- init
+    dotnet run -- add <nom du fichier>
+    dotnet run -- commit "<message du commit>"
+    dotnet run -- rm <nom du fichier>
+    dotnet run -- log
+    dotnet run -- global-log
+    dotnet run -- find "<message du commit>"
+
+Pour créer des fichiers de test, utilisez l'outil de votre choix (nano, vim, etc.).
+
+
+===========================================================================================
+## 🇨🇳已经开发完的功能：🇨🇳
+1.init
+2.add
+3.commit
+4.log
+5.global log
+6.find
+
+如果你想想尝试，可以吧dev分支上的代码克隆到你本地的干净文件夹里，安装好环境后执行
+到src目录下执行：
+
+1.dotnet clean
+2.dotnet build
+3.dotnet run -- init
+4.dotnet run -- add <str path of file>
+5.dotnet run -- commit <str message of commit>
+6.dotnet run -- log
+7.dotnet run -- global log
+8.dotnet run -- find<str message of commit>
+
+其他创建文件的命令行工具如nano, vim 等请视自己电脑的环境选用
+
+===========================================================================================
 
 这个项目来自我阅读https://sp21.datastructur.es/materials/proj/proj2/proj2#the-commands， <br>
 并观看视频后，在视频给出的骨架基础上逐步完善的。 <br>
