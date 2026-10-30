@@ -309,7 +309,6 @@ public class Repository
            
                 var message = CurrentCommit.Message;
                 
-           
                 //apprend
                 infomationToPrint.Append("==============\n");
                 infomationToPrint.Append("commit  ");
@@ -326,6 +325,48 @@ public class Repository
         return infomationToPrint.ToString();
     }
     
+    //find
+    //给一条提交消息,找出所有消息完全相同的 commit,打印它们的哈希。
+    //如果没有就throw exceptions
+    public string GitletFind(string message)
+    {
+        var infomationToPrint = new StringBuilder();
+        var compteur = 0;
+        
+        foreach (var commit in Directory.GetDirectories(_paths.CommitDir))
+        {
+            var prefixe = Path.GetFileName(commit);
+            
+
+            foreach (var file in Directory.GetFiles(commit))
+            {
+                var hashtoprint = prefixe + Path.GetFileName(file);
+                
+                var CurrentCommit = ReadCommit(hashtoprint);
+
+                // var date = CurrentCommit.TimeStamp.ToLocalTime()
+                //     .ToString("ddd MMM d HH:mm:ss yyyy zzz", CultureInfo.InvariantCulture);
+
+                if (message == CurrentCommit.Message)
+                {
+                    infomationToPrint.Append(hashtoprint);
+                    
+                    infomationToPrint.Append("\n");
+
+                    compteur++;
+                }
+                
+            }
+
+        }
+        
+        if (compteur == 0)
+        {
+            throw new GitletException("Found no commit with that message.");
+        }
+
+        return infomationToPrint.ToString();
+    }
     
     
     //Helper

@@ -30,6 +30,9 @@ public static class Program
             case "global-log" :
                 Console.Write(repo.GitletGlobalLog());
                 break;
+            case "find" :
+                Console.Write(repo.GitletFind(args[1]));
+                break;
             
             default:
                 Console.WriteLine("Unknown command");
