@@ -30,7 +30,7 @@ public class Repository
         //1,如果已经init过了，就报错
         if (Directory.Exists(_paths.GitletDir))// public string GitletDir => Path.Combine(_workingDirectory, ".gitlet");
         {
-            throw new GitletException("A Gitlet version-control system already exists in the current directory.");
+            throw new GitletException(ExceptionMessages.AlreadyInitialized);
         }
         
         //2,建目录
@@ -76,7 +76,7 @@ public class Repository
 
         if (!File.Exists(Path.Combine(_workingDirectory, filePath)))
         {
-            throw new GitletException("File does not exist.");
+            throw new GitletException(ExceptionMessages.FileDoesNotExist);
         }
     
 
@@ -129,12 +129,12 @@ public class Repository
         //检查消息非空、暂存区非空
         if (string.IsNullOrEmpty(message) )
         {
-            throw new GitletException("Please enter a commit message.");
+            throw new GitletException(ExceptionMessages.PleaseEnterCommitMessage);
         }
 
         if (ReadStaging().Additions.Count == 0 && ReadStaging().Removals.Count == 0)
         {
-            throw new GitletException("Please add or delete some files to commit.");
+            throw new GitletException(ExceptionMessages.NoChangesAdded);
         }
         
         //读暂存区
@@ -205,7 +205,7 @@ public class Repository
         //fall
         if (!isStaged && !isCommitted)
         {
-            throw new GitletException("No reason to remove the file.");
+            throw new GitletException(ExceptionMessages.NoReasonToRemove);
         }
         
         //in staging
@@ -362,7 +362,7 @@ public class Repository
         
         if (compteur == 0)
         {
-            throw new GitletException("Found no commit with that message.");
+            throw new GitletException(ExceptionMessages.NoCommitWithMessage);
         }
 
         return infomationToPrint.ToString();
