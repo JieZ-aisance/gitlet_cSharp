@@ -1,4 +1,5 @@
-# gitlet en c# pour une demontration de competences en dev
+# Gitlet in C# — a showcase of development skills of C# .NET 🇬🇧
+# Gitlet en c# pour une demontration de competences en dev C# .NET🇫🇷
 ### Author:Jie
 ### Updated:2026-10-30
 
