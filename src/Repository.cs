@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text;
 using System.Globalization;
+using Microsoft.VisualBasic;
 
 namespace Gitlet;
 //TODO: any imports you need here
@@ -400,6 +401,62 @@ public class Repository
     }
     
     
+    //status
+    public string GitletStatus()
+    {
+        //branch
+        var infomationToPrint = new StringBuilder();
+        infomationToPrint.Append("=== Branches ===\n");
+
+        var current = CurrentBranch();
+        var branches = Directory.GetFiles(_paths.RefHeadDirec)
+            .Select(Path.GetFileName)
+            .OrderBy(name => name, StringComparer.Ordinal);
+
+        foreach (var name in branches)
+        {
+            if (name == current)
+            {
+                infomationToPrint.Append($"*{name}\n");
+            }
+            else
+            {
+                infomationToPrint.Append($"{name}\n");
+            }
+        }
+        infomationToPrint.Append("\n");
+        
+        //staging
+        var staging = ReadStaging();
+
+        infomationToPrint.Append("=== Staged Files ===\n");
+        foreach (var name in staging.Additions.Keys)
+        {
+            infomationToPrint.Append($"{name}\n");
+        }
+        infomationToPrint.Append("\n");
+
+            infomationToPrint.Append("=== Removed Files ===\n");
+        foreach (var name in staging.Removals)
+        {
+                infomationToPrint.Append($"{name}\n");
+        }
+        infomationToPrint.Append("\n");
+        
+        //TO DO
+        infomationToPrint.Append("=== Modifications Not Staged For Commit ===");
+        infomationToPrint.Append("\n");
+        infomationToPrint.Append("\n");
+        
+        //TO DO
+        infomationToPrint.Append("=== Untracked Files ===");
+        infomationToPrint.Append("\n");
+        infomationToPrint.Append("\n");
+        
+        return infomationToPrint.ToString();
+        
+    }
+    
     
     
     //Helper
@@ -469,4 +526,13 @@ public class Repository
         var stagingCurr = JsonSerializer.Deserialize<Staging>(json);
         return  stagingCurr;
     }
+    
+    // 读 HEAD,返回当前分支名,比如 "main"
+    private string CurrentBranch()
+    {
+        var head = File.ReadAllText(_paths.HeadFile).Trim();
+        const string prefix = "ref: refs/heads/";
+        return head[prefix.Length..];
+    }
+    
 }

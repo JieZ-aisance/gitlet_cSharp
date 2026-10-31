@@ -1,7 +1,7 @@
 # Gitlet in C# — a showcase of development skills of C# .NET 🇬🇧
 # Gitlet en c# pour une demontration de competences en dev C# .NET🇫🇷
 ### Author:Jie
-### Updated:2026-10-30
+### Updated:2026-10-31
 
 ## 🇬🇧Implemented commands🇬🇧 
 
@@ -12,6 +12,10 @@
 5. log
 6. global-log
 7. find
+8. branch
+9. rmbranch
+10. status
+
 
 ## Try it
 
@@ -21,11 +25,15 @@ Clone the `dev` branch into a clean local folder, install the .NET 10 SDK, then 
     dotnet build
     dotnet run -- init
     dotnet run -- add <file name>
-    dotnet run -- commit "<commit message>"
+    dotnet run -- commit <commit message>
     dotnet run -- rm <file name>
     dotnet run -- log
     dotnet run -- global-log
-    dotnet run -- find "<commit message>"
+    dotnet run -- find <commit message>
+    dotnet run -- branch <branch name>
+    dotnet run -- rmbranch <branch name>
+    dotnet run -- status
+
 
 Use whichever tool you prefer (nano, vim, etc.) to create test files.
 ===========================================================================================
@@ -38,6 +46,9 @@ Use whichever tool you prefer (nano, vim, etc.) to create test files.
 5. log
 6. global-log
 7. find
+8. branch
+9. rmbranch
+10. status
 
 ## Essayer
 
@@ -47,11 +58,15 @@ Clonez la branche `dev` dans un dossier local vide, installez le SDK .NET 10, pu
     dotnet build
     dotnet run -- init
     dotnet run -- add <nom du fichier>
-    dotnet run -- commit "<message du commit>"
+    dotnet run -- commit <message du commit>
     dotnet run -- rm <nom du fichier>
     dotnet run -- log
     dotnet run -- global-log
-    dotnet run -- find "<message du commit>"
+    dotnet run -- find <message du commit>
+    dotnet run -- branch <branch name>
+    dotnet run -- rmbranch <branch name>
+    dotnet run -- status
+
 
 Pour créer des fichiers de test, utilisez l'outil de votre choix (nano, vim, etc.).
 ===========================================================================================

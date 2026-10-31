@@ -53,6 +53,9 @@ public static class Program
                 case "rmbranch":
                     repo.GitletRmBranch(args[1]);
                     break;
+                case "status":
+                    Console.Write(repo.GitletStatus());
+                    break;
                 
                 default:
                     throw new GitletException(ExceptionMessages.NoSuchCommand);
