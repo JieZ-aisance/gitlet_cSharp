@@ -355,18 +355,36 @@ public class Repository
 
                     compteur++;
                 }
-                
             }
-
         }
         
         if (compteur == 0)
         {
             throw new GitletException(ExceptionMessages.NoCommitWithMessage);
         }
-
         return infomationToPrint.ToString();
     }
+    
+    //branch
+    //Creates a new branch with the given name, and points it at the current head commit. 
+    //创建分支，但是不会立刻切换到新分支上
+    
+    public void GitletBranch(string branchName)
+    {
+        //already exist
+        if (File.Exists(_paths.BranchFile(branchName)))
+        {
+            throw new GitletException(ExceptionMessages.BranchAlreadyExists);
+            
+        }
+        //sinon
+        var commitCurrHash = GetCommitHash();
+        //public string RefHeadDirec => Path.Combine(GitletDir, "refs", "heads");
+        File.WriteAllText(_paths.BranchFile(branchName), commitCurrHash);
+        //Console.WriteLine("New branch created: " + branchName);
+    }
+    
+    
     
     
     //Helper

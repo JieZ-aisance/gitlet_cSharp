@@ -47,6 +47,10 @@ public static class Program
                 case "find":
                     Console.Write(repo.GitletFind(args[1]));
                     break;
+                case "branch":
+                    repo.GitletBranch(args[1]);
+                    break;
+                
                 default:
                     throw new GitletException(ExceptionMessages.NoSuchCommand);
                    
