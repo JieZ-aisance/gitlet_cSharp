@@ -4,6 +4,7 @@ public static class ExceptionMessages
 {
     public const string FileDoesNotExist = "File does not exist.";
     public const string BranchAlreadyExists = "Branch already exists.";
+    public const string BranchNoExists = "Branch does not exist.";
     public const string NoReasonToRemove = "No reason to remove the file.";
     public const string NoCommitWithMessage = "Found no commit with that message.";
     public const string PleaseEnterCommitMessage = "Please enter a commit message.";

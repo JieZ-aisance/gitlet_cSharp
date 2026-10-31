@@ -50,6 +50,9 @@ public static class Program
                 case "branch":
                     repo.GitletBranch(args[1]);
                     break;
+                case "rmbranch":
+                    repo.GitletRmBranch(args[1]);
+                    break;
                 
                 default:
                     throw new GitletException(ExceptionMessages.NoSuchCommand);

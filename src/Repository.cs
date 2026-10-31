@@ -384,6 +384,21 @@ public class Repository
         //Console.WriteLine("New branch created: " + branchName);
     }
     
+    //rm branch
+    //delete the branch
+    public void GitletRmBranch(string branchName)
+    {
+        //no exist branch
+        if (!File.Exists(_paths.BranchFile(branchName)))
+        {
+            throw new GitletException(ExceptionMessages.BranchNoExists);
+            
+        }
+        //sinon
+        File.Delete(_paths.BranchFile(branchName));
+        Console.WriteLine("Branch deleted: " + branchName);
+    }
+    
     
     
     
