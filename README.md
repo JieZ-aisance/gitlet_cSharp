@@ -1,9 +1,9 @@
 # Gitlet en c# pour une demontration de competences en dev C# .NET pout obtenir un emploi junior développeuse 🇫🇷
-# Gitlet in C# — a showcase of development skills of C# .NET in order to get a junior developer job🇬🇧
+
 ### Author:Jie ZHAO, master in computer science, graduated in 2026 september, UGA(IM2AG, M2CCI)
 ### Updated:2026-10-31
 ### Comparable au Cahier des charges dans la production/ Specification : https://sp21.datastructur.es/materials/proj/proj2/proj2
-
+### version anglaise🇬🇧 plus bas
 
 ====================================================================================
 
