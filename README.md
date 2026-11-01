@@ -4,7 +4,8 @@
 ### Updated:2026-10-31
 ### Comparable au Cahier des charges dans la production/ Specification : https://sp21.datastructur.es/materials/proj/proj2/proj2
 
-===========================================================================================
+
+====================================================================================
 
 ## Version Française 🇫🇷
 ## Commandes implémentées
@@ -50,7 +51,7 @@ Clonez la branche `dev` dans un dossier local vide, installez le SDK .NET 10, pu
 ### Pour créer des fichiers de test, utilisez l'outil de votre choix (nano, vim, etc.).
 
 
-===========================================================================================
+====================================================================================
 ## English version 🇬🇧
 ## Implemented commands
 
@@ -93,7 +94,8 @@ Clone the `dev` branch into a clean local folder, install the .NET 10 SDK, then 
 
 ### Use whichever tool you prefer (nano, vim, etc.) to create test files.
 
-===========================================================================================
+
+====================================================================================
 
 ## 🇨🇳已经开发完的功能：🇨🇳
 1.init
