@@ -70,7 +70,7 @@ public static class Program
                     else if (args.Length == 2)
                     {
                         // checkout <branch>,还没写
-                        throw new GitletException(ExceptionMessages.IncorrectOperands);
+                        repo.GitletCheckoutBranch(args[1]);
                     }
                     else
                     {

@@ -531,7 +531,75 @@ public class Repository
     //如果工作目录里已经有这些文件,就覆盖它们。
     //此外,在这条命令结束时,给定的分支将被视为当前分支(HEAD)。
     //在当前分支中被跟踪、但在被检出的分支中不存在的文件,将被删除。暂存区会被清空,除非被检出的分支就是当前分支(见下面的失败情形)。
+    public void GitletCheckoutBranch(string branchName)
+    {
+        //检查输入的分支是否存在
+        if (!File.Exists(_paths.BranchFile(branchName)))
+        {
+            throw new GitletException(ExceptionMessages.BranchNoExists);
+            
+        }
+        
+        
+        //检查分支是不是当前分支
+        var currentBranch = CurrentBranch();
+        if(branchName == currentBranch)
+        {
+            throw new GitletException(ExceptionMessages.ALreadyOnTheBranch);
+        }
+        
+        
+        //检查是否有未跟踪文件
+        var commitCurr = ReadCommit();
+        //计算目标branch的哈希
+        var branchPath = _paths.BranchFile(branchName);          
+        
+        var targetHash = File.ReadAllText(branchPath).Trim();    
+        
+        var target = ReadCommit(targetHash);
+        
+        foreach (var fileName in target.Files.Keys)
+        {
+            var path = Path.Combine(_workingDirectory, fileName);
+            
+            if (File.Exists(path) && !commitCurr.Files.ContainsKey(fileName))
+            {
+                throw new GitletException(ExceptionMessages.UntrackedFileInTheWay);
+            }
+        }
+        
+        //目标分支的每个文件 → 写进工作目录(覆盖)
+        var targetFiles = target.Files;
+        foreach (var pair in targetFiles)
+        {
+            var path = Path.Combine(_workingDirectory, pair.Key);
+            var blobHash = pair.Value;
+            byte[] content = _objects.Read("blob", blobHash);
+            File.WriteAllBytes(path, content);
+        }
+        
+        // 删除当前分支跟踪、目标分支没有的文件 
+        foreach (var fileName in commitCurr.Files.Keys)
+        {
+            if (!target.Files.ContainsKey(fileName))
+            {
+                var path = Path.Combine(_workingDirectory, fileName);
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
+        }
+        // HEAD 指向目标分支
+        File.WriteAllText(_paths.HeadFile, $"ref: refs/heads/{branchName}");
+        Console.WriteLine($"On the branch {branchName} now");
+        // 清空暂存区
+        var staging = ReadStaging();
+        staging.Additions.Clear();
+        staging.Removals.Clear();
+        File.WriteAllText(_paths.StagingFile, JsonSerializer.Serialize(staging));
     
+    }
     
     
     //Helper
