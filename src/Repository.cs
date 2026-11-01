@@ -472,7 +472,7 @@ public class Repository
     {
         var commitCurr = ReadCommit();
         
-        if (!commitCurr.Files.TryGetValue(fileName, out string? blobHash))//参见add
+        if (!commitCurr.Files.TryGetValue(fileName, out string? blobHash))//参见add,如果存在就返回他的hash，不存在就抛异常
         {
             throw new GitletException(ExceptionMessages.FileDoesNotExist);
         }
@@ -483,12 +483,49 @@ public class Repository
         
     }
     
-    
-    
-    
     //2, checkout <commit id> -- <FileName>
     //取出该文件在给定 id 的提交中的版本,放到工作目录中;id就是hash此处
     //如果工作目录里已经有这个文件,就覆盖它。新版本的文件不会被暂存。
+
+    public void GitletCheckoutCommitFile(string commitId, string fileName)
+    {
+        //根据hash找对应的commit
+        var commitList = new List<string>();
+        
+        //遍历这个目录，存在list里
+        foreach (var eachCommit in Directory.GetDirectories(_paths.CommitDir))
+        {
+            var prefixe = Path.GetFileName(eachCommit);
+            foreach (var file in Directory.GetFiles(eachCommit))
+            {
+                var hashtoprint = prefixe + Path.GetFileName(file);
+                commitList.Add(hashtoprint);
+            }
+        }
+
+        foreach (var commitHash in commitList)
+        {
+            if (commitHash.StartsWith(commitId))//commitId is a part of the commitHash
+            {
+                var commit = ReadCommit(commitHash);
+                // public SortedDictionary<string, string> Files { get; init; }
+                var Filelist = commit.Files;
+
+                if (!Filelist.TryGetValue(fileName, out string? blobHash))
+                {
+                    throw new GitletException(ExceptionMessages.FileDoesNotExist);
+                }
+
+                byte[] content = _objects.Read("blob", blobHash);
+                File.WriteAllBytes(Path.Combine(_workingDirectory, fileName), content);
+                return;
+            }
+
+        }
+        throw new GitletException(ExceptionMessages.CommitDoesNotExist);
+    }
+    
+    
     //3, checkout <branchName>
     //取出给定分支头部那个提交中的所有文件,放到工作目录中;
     //如果工作目录里已经有这些文件,就覆盖它们。

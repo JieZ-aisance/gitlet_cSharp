@@ -57,8 +57,27 @@ public static class Program
                     Console.Write(repo.GitletStatus());
                     break;
                 case "checkout":
-                    repo.GitletCheckoutFile(args[1]);
+                    if (args.Length == 3 && args[1] == "--")
+                    {
+                        // checkout -- <file>
+                        repo.GitletCheckoutFile(args[2]);
+                    }
+                    else if (args.Length == 4 && args[2] == "--")
+                    {
+                        // checkout <commit id> -- <file>
+                        repo.GitletCheckoutCommitFile(args[1], args[3]);
+                    }
+                    else if (args.Length == 2)
+                    {
+                        // checkout <branch>,还没写
+                        throw new GitletException(ExceptionMessages.IncorrectOperands);
+                    }
+                    else
+                    {
+                        throw new GitletException(ExceptionMessages.IncorrectOperands);
+                    }
                     break;
+                
                 
                 default:
                     throw new GitletException(ExceptionMessages.NoSuchCommand);

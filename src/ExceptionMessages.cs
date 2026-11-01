@@ -3,6 +3,7 @@ namespace Gitlet;
 public static class ExceptionMessages
 {
     public const string FileDoesNotExist = "File does not exist.";
+    public const string CommitDoesNotExist = "Commit does not exist.";
     public const string BranchAlreadyExists = "Branch already exists.";
     public const string BranchNoExists = "Branch does not exist.";
     public const string NoReasonToRemove = "No reason to remove the file.";
