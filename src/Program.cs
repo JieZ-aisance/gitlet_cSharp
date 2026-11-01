@@ -56,9 +56,13 @@ public static class Program
                 case "status":
                     Console.Write(repo.GitletStatus());
                     break;
+                case "checkout":
+                    repo.GitletCheckoutFile(args[1]);
+                    break;
                 
                 default:
                     throw new GitletException(ExceptionMessages.NoSuchCommand);
+                
                    
             }
         }
@@ -79,7 +83,6 @@ public static class Program
                 throw new GitletException(ExceptionMessages.IncorrectOperands);
             }
         }
-        
     }
     
 

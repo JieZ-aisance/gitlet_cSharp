@@ -411,7 +411,15 @@ public class Repository
         var current = CurrentBranch();
         var branches = Directory.GetFiles(_paths.RefHeadDirec)
             .Select(Path.GetFileName)
-            .OrderBy(name => name, StringComparer.Ordinal);
+            .OrderBy(name => name, StringComparer.Ordinal);//按名字排序
+        
+        //复习linq
+        //.Where(x => 条件)          // 筛选,类似 SQL 的 WHERE
+        // .Select(x => 变换)         // 映射,每个元素变成另一个
+        // .OrderBy(x => 排序依据)    // 排序
+        // .First()                   // 取第一个
+        // .Count()                   // 数量
+        // .ToList()                  // 变成 List
 
         foreach (var name in branches)
         {
@@ -456,6 +464,36 @@ public class Repository
         return infomationToPrint.ToString();
         
     }
+    
+    //checkout
+    //1, checkout -- <fileName>
+    //取出该文件在HEAD中的版本,放到工作目录中;如果工作目录里已经有这个文件,就覆盖它。新版本的文件不会被暂存。
+    public void GitletCheckoutFile(string fileName)
+    {
+        var commitCurr = ReadCommit();
+        
+        if (!commitCurr.Files.TryGetValue(fileName, out string? blobHash))//参见add
+        {
+            throw new GitletException(ExceptionMessages.FileDoesNotExist);
+        }
+
+        byte[] content = _objects.Read("blob", blobHash);
+        
+        File.WriteAllBytes(Path.Combine(_workingDirectory, fileName), content);
+        
+    }
+    
+    
+    
+    
+    //2, checkout <commit id> -- <FileName>
+    //取出该文件在给定 id 的提交中的版本,放到工作目录中;id就是hash此处
+    //如果工作目录里已经有这个文件,就覆盖它。新版本的文件不会被暂存。
+    //3, checkout <branchName>
+    //取出给定分支头部那个提交中的所有文件,放到工作目录中;
+    //如果工作目录里已经有这些文件,就覆盖它们。
+    //此外,在这条命令结束时,给定的分支将被视为当前分支(HEAD)。
+    //在当前分支中被跟踪、但在被检出的分支中不存在的文件,将被删除。暂存区会被清空,除非被检出的分支就是当前分支(见下面的失败情形)。
     
     
     
