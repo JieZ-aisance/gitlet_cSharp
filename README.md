@@ -1,49 +1,13 @@
-# Gitlet in C# — a showcase of development skills of C# .NET in order to get a junior developer job🇬🇧
 # Gitlet en c# pour une demontration de competences en dev C# .NET pout obtenir un emploi junior développeuse 🇫🇷
+# Gitlet in C# — a showcase of development skills of C# .NET in order to get a junior developer job🇬🇧
 ### Author:Jie ZHAO, master in computer science, graduated in 2026 september, UGA(IM2AG, M2CCI)
 ### Updated:2026-10-31
-
-## 🇬🇧Implemented commands🇬🇧
-
-1. `init` — Creates a new Gitlet repository in the current directory, with an initial empty commit on the default branch.
-2. `add <file name>` — Stages the current version of a file for the next commit.
-3. `commit "<message>"` — Saves a snapshot of the staged changes as a new commit on the current branch.
-4. `rm <file name>` — Unstages a file, and if it is tracked, marks it for removal and deletes it from the working directory.
-5. `log` — Shows the history of the current branch, from the latest commit back to the initial one.
-6. `global-log` — Shows every commit ever made in the repository, regardless of branch.
-7. `find "<message>"` — Prints the ids of all commits whose message matches exactly.
-8. `branch <branch name>` — Creates a new branch pointing at the current commit, without switching to it.
-9. `rm-branch <branch name>` — Deletes a branch pointer; the commits themselves are kept.
-10. `status` — Lists the branches (current one marked with `*`) and the files staged for addition or removal.
-11. `checkout`
- - 11.1. `checkout -- <file name>` — Restores a file to its version in the current commit.
- - 11.2. `checkout <commit id> -- <file name>` — Restores a file to its version in a given commit (the id can be abbreviated).
- - 11.3. `checkout <branch name>` — Switches to another branch and updates the working directory to match it.
-
-
-## Try it
-
-Clone the `dev` branch into a clean local folder, install the .NET 10 SDK, then run the following from the `src` directory:
-
-    dotnet clean
-    dotnet build
-    dotnet run -- init
-    dotnet run -- add <file name>
-    dotnet run -- commit <commit message>
-    dotnet run -- rm <file name>
-    dotnet run -- log
-    dotnet run -- global-log
-    dotnet run -- find <commit message>
-    dotnet run -- branch <branch name>
-    dotnet run -- rmbranch <branch name>
-    dotnet run -- status
-
-
-Use whichever tool you prefer (nano, vim, etc.) to create test files.
+### Comparable au Cahier des charges dans la production/ Specification : https://sp21.datastructur.es/materials/proj/proj2/proj2
 
 ===========================================================================================
 
-## 🇫🇷Commandes implémentées🇫🇷
+## Version Française 🇫🇷
+## Commandes implémentées
 
 1. `init` — Crée un nouveau dépôt Gitlet dans le répertoire courant, avec un commit initial vide sur la branche par défaut.
 2. `add <nom du fichier>` — Indexe la version actuelle d'un fichier pour le prochain commit.
@@ -65,21 +29,72 @@ Use whichever tool you prefer (nano, vim, etc.) to create test files.
 Clonez la branche `dev` dans un dossier local vide, installez le SDK .NET 10, puis exécutez depuis le répertoire `src` :
 
     dotnet clean
+    dotnet clean
     dotnet build
     dotnet run -- init
     dotnet run -- add <nom du fichier>
-    dotnet run -- commit <message du commit>
+    dotnet run -- commit "<message du commit>"
     dotnet run -- rm <nom du fichier>
     dotnet run -- log
     dotnet run -- global-log
-    dotnet run -- find <message du commit>
-    dotnet run -- branch <branch name>
-    dotnet run -- rmbranch <branch name>
+    dotnet run -- find "<message du commit>"
+    dotnet run -- branch <nom de branche>
+    dotnet run -- rm-branch <nom de branche>
     dotnet run -- status
+    dotnet run -- checkout -- <nom du fichier>
+    dotnet run -- checkout <id du commit> -- <nom du fichier>
+    dotnet run -- checkout <nom de branche>
 
 
-Pour créer des fichiers de test, utilisez l'outil de votre choix (nano, vim, etc.).
+
+### Pour créer des fichiers de test, utilisez l'outil de votre choix (nano, vim, etc.).
+
+
 ===========================================================================================
+## English version 🇬🇧
+## Implemented commands
+
+1. `init` — Creates a new Gitlet repository in the current directory, with an initial empty commit on the default branch.
+2. `add <file name>` — Stages the current version of a file for the next commit.
+3. `commit "<message>"` — Saves a snapshot of the staged changes as a new commit on the current branch.
+4. `rm <file name>` — Unstages a file, and if it is tracked, marks it for removal and deletes it from the working directory.
+5. `log` — Shows the history of the current branch, from the latest commit back to the initial one.
+6. `global-log` — Shows every commit ever made in the repository, regardless of branch.
+7. `find "<message>"` — Prints the ids of all commits whose message matches exactly.
+8. `branch <branch name>` — Creates a new branch pointing at the current commit, without switching to it.
+9. `rm-branch <branch name>` — Deletes a branch pointer; the commits themselves are kept.
+10. `status` — Lists the branches (current one marked with `*`) and the files staged for addition or removal.
+11. `checkout`
+- 11.1. `checkout -- <file name>` — Restores a file to its version in the current commit.
+- 11.2. `checkout <commit id> -- <file name>` — Restores a file to its version in a given commit (the id can be abbreviated).
+- 11.3. `checkout <branch name>` — Switches to another branch and updates the working directory to match it.
+
+
+## Try it
+
+Clone the `dev` branch into a clean local folder, install the .NET 10 SDK, then run the following from the `src` directory:
+
+    dotnet clean
+    dotnet build
+    dotnet run -- init
+    dotnet run -- add <file name>
+    dotnet run -- commit "<commit message>"
+    dotnet run -- rm <file name>
+    dotnet run -- log
+    dotnet run -- global-log
+    dotnet run -- find "<commit message>"
+    dotnet run -- branch <branch name>
+    dotnet run -- rm-branch <branch name>
+    dotnet run -- status
+    dotnet run -- checkout -- <file name>
+    dotnet run -- checkout <commit id> -- <file name>
+    dotnet run -- checkout <branch name>
+
+
+### Use whichever tool you prefer (nano, vim, etc.) to create test files.
+
+===========================================================================================
+
 ## 🇨🇳已经开发完的功能：🇨🇳
 1.init
 2.add
