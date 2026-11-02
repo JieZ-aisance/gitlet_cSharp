@@ -106,7 +106,7 @@ public class Repository
         //value: blob hash
         
         //if current
-        if (commitCurrFiles.TryGetValue(filePath, out string? oldHash) && oldHash == newHash)
+        if (commitCurrFiles.TryGetValue(filePath, out string oldHash) && oldHash == newHash)
         {
             // 在 commit 里,且内容一样 → 没改过,移除
             stagingAdditions.Remove(filePath);
@@ -478,7 +478,7 @@ public class Repository
     {
         var commitCurr = ReadCommit();
         
-        if (!commitCurr.Files.TryGetValue(fileName, out string? blobHash))//参见add,如果存在就返回他的hash，不存在就抛异常
+        if (!commitCurr.Files.TryGetValue(fileName, out string blobHash))//参见add,如果存在就返回他的hash，不存在就抛异常
         {
             throw new GitletException(ExceptionMessages.FileDoesNotExist);
         }
@@ -517,7 +517,7 @@ public class Repository
                 // public SortedDictionary<string, string> Files { get; init; }
                 var Filelist = commit.Files;
 
-                if (!Filelist.TryGetValue(fileName, out string? blobHash))
+                if (!Filelist.TryGetValue(fileName, out string blobHash))
                 {
                     throw new GitletException(ExceptionMessages.FileDoesNotExist);
                 }
