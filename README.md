@@ -26,30 +26,39 @@
  - 11.3. `checkout <nom de branche>` — Bascule sur une autre branche et met à jour le répertoire de travail en conséquence.
 12. `reset <id du commit>` — Ramène la branche courante et le répertoire de travail à l'état d'un commit donné, et vide l'index (l'identifiant peut être abrégé).
 
-## Essayer
+## Démarrage rapide
 
-Clonez la branche `dev` dans un dossier local vide, installez le SDK .NET 10, puis exécutez depuis le répertoire `src` :
+    git clone https://github.com/JieZ-aisance/gitlet_cSharp.git
+    cd gitlet_cSharp
+    dotnet build src
 
-    dotnet clean
-    dotnet build
-    dotnet run -- init
-    dotnet run -- add <nom du fichier>
-    dotnet run -- commit "<message du commit>"
-    dotnet run -- rm <nom du fichier>
-    dotnet run -- log
-    dotnet run -- global-log
-    dotnet run -- find "<message du commit>"
-    dotnet run -- branch <nom de branche>
-    dotnet run -- rm-branch <nom de branche>
-    dotnet run -- status
-    dotnet run -- checkout -- <nom du fichier>
-    dotnet run -- checkout <id du commit> -- <nom du fichier>
-    dotnet run -- checkout <nom de branche>
-    dotnet run -- reset <commitId>
+    alias gitlet='dotnet run --project ~/gitlet_cSharp/src --'
+    mkdir ~/gitlet-demo && cd ~/gitlet-demo
+    gitlet init
+    echo "hello" > hello.txt
+    gitlet add hello.txt
+    gitlet commit "add hello"
+    gitlet log
 
+## Aide-mémoire des commandes
 
+Depuis un dossier de travail situé en dehors du code source (voir ci-dessus) :
 
-### Pour créer des fichiers de test, utilisez l'outil de votre choix (nano, vim, etc.).
+    gitlet init
+    gitlet add <nom du fichier>
+    gitlet commit "<message du commit>"
+    gitlet rm <nom du fichier>
+    gitlet log
+    gitlet global-log
+    gitlet find "<message du commit>"
+    gitlet branch <nom de branche>
+    gitlet rm-branch <nom de branche>
+    gitlet status
+    gitlet checkout -- <nom du fichier>
+    gitlet checkout <id du commit> -- <nom du fichier>
+    gitlet checkout <nom de branche>
+    gitlet reset <id du commit>
+
 
 
 ====================================================================================
@@ -73,29 +82,40 @@ Clonez la branche `dev` dans un dossier local vide, installez le SDK .NET 10, pu
 12. `reset <commit id>` — Moves the current branch back to a given commit and restores the working directory to match it, clearing the staging area (the id can be abbreviated).
 
 
-## Try it
+## Quick start
 
-Clone the `dev` branch into a clean local folder, install the .NET 10 SDK, then run the following from the `src` directory:
+    git clone https://github.com/JieZ-aisance/gitlet_cSharp.git
+    cd gitlet_cSharp
+    dotnet build src
 
-    dotnet clean
-    dotnet build
-    dotnet run -- init
-    dotnet run -- add <file name>
-    dotnet run -- commit "<commit message>"
-    dotnet run -- rm <file name>
-    dotnet run -- log
-    dotnet run -- global-log
-    dotnet run -- find "<commit message>"
-    dotnet run -- branch <branch name>
-    dotnet run -- rm-branch <branch name>
-    dotnet run -- status
-    dotnet run -- checkout -- <file name>
-    dotnet run -- checkout <commit id> -- <file name>
-    dotnet run -- checkout <branch name>
-    dotnet run -- reset <commitId>
+    alias gitlet='dotnet run --project ~/gitlet_cSharp/src --'
+    mkdir ~/gitlet-demo && cd ~/gitlet-demo
+    gitlet init
+    echo "hello" > hello.txt
+    gitlet add hello.txt
+    gitlet commit "add hello"
+    gitlet log
+
+## aid memoire of commands
+
+Depuis un dossier de travail situé en dehors du code source (voir ci-dessus) :
+
+    gitlet init
+    gitlet add <nom du fichier>
+    gitlet commit "<message du commit>"
+    gitlet rm <nom du fichier>
+    gitlet log
+    gitlet global-log
+    gitlet find "<message du commit>"
+    gitlet branch <nom de branche>
+    gitlet rm-branch <nom de branche>
+    gitlet status
+    gitlet checkout -- <nom du fichier>
+    gitlet checkout <id du commit> -- <nom du fichier>
+    gitlet checkout <nom de branche>
+    gitlet reset <id du commit>
 
 
-### Use whichever tool you prefer (nano, vim, etc.) to create test files.
 
 
 ====================================================================================
