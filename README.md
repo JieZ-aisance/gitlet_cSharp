@@ -4,6 +4,7 @@
 ### Updated: 2026-11-02
 ### Cahier des charges du projet Gitlet: https://sp21.datastructur.es/materials/proj/proj2/proj2
 ### 🇬🇧 English version is available below the french one.
+### Pour le détail du raisonnement et des algorithmes, consultez le code de la branche `dev` ; sur la branche `main`, les commentaires ont été retirés pour garder un code propre.
 
 ====================================================================================
 
