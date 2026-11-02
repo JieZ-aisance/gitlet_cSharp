@@ -1,8 +1,8 @@
 # Gitlet en C#  🇫🇷
 
-### Author: Jie ZHAO, M2 en informatique, en recherche active d'un CDI.
+### Author: Jie ZHAO, diplomée M2 en informatique 2026, en recherche active d'un CDI.
 ### Updated: 2026-11-02
-### Comparable au Cahier des charges dans la production du projet Gitlet/ Specification : https://sp21.datastructur.es/materials/proj/proj2/proj2
+### Cahier des charges du projet Gitlet: https://sp21.datastructur.es/materials/proj/proj2/proj2
 ### 🇬🇧 English version is available below the french one.
 
 ====================================================================================
@@ -28,9 +28,22 @@
 
 ## Démarrage rapide
 
+### 1. Récupérer et compiler le projet
+
+    cd ~
     git clone https://github.com/JieZ-aisance/gitlet_cSharp.git
     cd gitlet_cSharp
     dotnet build src
+
+### 2. Vérifier que tout fonctionne
+
+    ./scripts/smoke_test.sh
+
+Ce script exécute les principales commandes dans un dossier temporaire, compare leur sortie avec le résultat attendu, puis supprime tout ce qu'il a créé. Il doit se terminer par `Failed: 0`.
+
+### 3. Essayer Gitlet
+
+Travaillez dans un dossier séparé, afin que le dépôt `.gitlet` et les fichiers de test restent en dehors du code source :
 
     alias gitlet='dotnet run --project ~/gitlet_cSharp/src --'
     mkdir ~/gitlet-demo && cd ~/gitlet-demo
@@ -60,7 +73,6 @@ Depuis un dossier de travail situé en dehors du code source (voir ci-dessus) :
     gitlet reset <id du commit>
 
 
-
 ====================================================================================
 ## English version 🇬🇧
 ## Implemented commands
@@ -84,9 +96,18 @@ Depuis un dossier de travail situé en dehors du code source (voir ci-dessus) :
 
 ## Quick start
 
+### 1. Clone and build the project
+
+    cd ~
     git clone https://github.com/JieZ-aisance/gitlet_cSharp.git
     cd gitlet_cSharp
     dotnet build src
+
+### 2. Run the smoke test
+
+    ./scripts/smoke_test.sh
+
+### 3. Try Gitlet in a separate folder
 
     alias gitlet='dotnet run --project ~/gitlet_cSharp/src --'
     mkdir ~/gitlet-demo && cd ~/gitlet-demo
@@ -95,73 +116,3 @@ Depuis un dossier de travail situé en dehors du code source (voir ci-dessus) :
     gitlet add hello.txt
     gitlet commit "add hello"
     gitlet log
-
-## aid memoire of commands
-
-Depuis un dossier de travail situé en dehors du code source (voir ci-dessus) :
-
-    gitlet init
-    gitlet add <nom du fichier>
-    gitlet commit "<message du commit>"
-    gitlet rm <nom du fichier>
-    gitlet log
-    gitlet global-log
-    gitlet find "<message du commit>"
-    gitlet branch <nom de branche>
-    gitlet rm-branch <nom de branche>
-    gitlet status
-    gitlet checkout -- <nom du fichier>
-    gitlet checkout <id du commit> -- <nom du fichier>
-    gitlet checkout <nom de branche>
-    gitlet reset <id du commit>
-
-
-
-
-====================================================================================
-
-## 🇨🇳已经开发完的功能：🇨🇳
-1.init
-2.add
-3.commit
-4.log
-5.global log
-6.find
-
-如果你想想尝试，可以吧dev分支上的代码克隆到你本地的干净文件夹里，安装好环境后执行
-到src目录下执行：
-
-1.dotnet clean
-2.dotnet build
-3.dotnet run -- init
-4.dotnet run -- add <str path of file>
-5.dotnet run -- commit <str message of commit>
-6.dotnet run -- log
-7.dotnet run -- global log
-8.dotnet run -- find<str message of commit>
-
-其他创建文件的命令行工具如nano, vim 等请视自己电脑的环境选用
-
-===========================================================================================
-
-这个项目来自我阅读https://sp21.datastructur.es/materials/proj/proj2/proj2#the-commands， <br>
-并观看视频后，在视频给出的骨架基础上逐步完善的。 <br>
-做这个项目的目的是找到一份后端开发的junior工作，base法国。 <br>
-设计思路思考过程用中文记录， 考虑到目标读者，项目完成到一定节点后会把设计思路翻译成法语和英文<br>
-<br>
- side tips
-1, git版本控制之所以能实现没改动的文件不重复占空间，是因为使用blob内容寻址。
-blob只根据文件内容进行哈希，不存文件名等信息（此处区别哈希和加密的概念，哈希不可逆，加密可逆）
-因此相同内容的blob即使add到暂存区多次，即使被commit多次引用，objects目录里始终只有一个blob对象。
-2，gitlet只有两个对象 blob和commit
-commit ──→ blob（git中多一个tree）
-3，Gitlet 只管一层平铺文件,不能管理嵌套文件，因为没有tree。
-4,merge功能先不写，但是知道常规操作。如果需要吧dev分支merge到main，需要先switch到main，然后git merge dev
-5，merge后被merge的分支不会主动删除，需要手动删除
-
-6,真实git的结构，给我的项目architecture做参考
-
-7，最终选择了课程给定的骨架，把java 换成c#
-
-
-
