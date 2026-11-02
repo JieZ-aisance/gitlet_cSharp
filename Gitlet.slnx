@@ -1,4 +1,5 @@
 <Solution>
+  <Folder Name="/scripts/" />
   <Folder Name="/src/">
     <Project Path="src/Gitlet.csproj" />
   </Folder>

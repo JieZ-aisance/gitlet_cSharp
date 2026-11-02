@@ -2,7 +2,6 @@
 namespace Gitlet;
 
 /** Driver class for Gitlet, a subset of the Git version-control system.
- *  @author TODO
  */
 public static class Program
 {
@@ -27,33 +26,43 @@ public static class Program
             switch (args[0])
             {
                 case "init":
+                    RequireArgs(args, 1);
                     repo.Init();
                     break;
                 case "add":
+                    RequireArgs(args, 2);
                     repo.GitletAdd(args[1]);
                     break;
                 case "commit":
+                    RequireArgs(args, 2);
                     repo.GitletCommit(args[1]);
                     break;
                 case "rm":
+                    RequireArgs(args, 2);
                     repo.GitletDelete(args[1]);
                     break;
                 case "log":
+                    RequireArgs(args, 1);
                     Console.Write(repo.GitletLog());
                     break;
                 case "global-log":
+                    RequireArgs(args, 1);
                     Console.Write(repo.GitletGlobalLog());
                     break;
                 case "find":
+                    RequireArgs(args, 2);
                     Console.Write(repo.GitletFind(args[1]));
                     break;
                 case "branch":
+                    RequireArgs(args, 2);
                     repo.GitletBranch(args[1]);
                     break;
                 case "rm-branch":
+                    RequireArgs(args, 2);
                     repo.GitletRmBranch(args[1]);
                     break;
                 case "status":
+                    RequireArgs(args, 1);
                     Console.Write(repo.GitletStatus());
                     break;
                 case "checkout":
@@ -79,6 +88,7 @@ public static class Program
                     break;
                 
                 case "reset":
+                    RequireArgs(args, 2);
                     repo.GitletReset(args[1]);
                     break;
                 
@@ -98,7 +108,7 @@ public static class Program
         }
     }
 
-    // 参数个数(含命令本身)不对 → spec 的 Incorrect operands.
+    // 参数个数(含命令本身)不对 → spec 的 Incorrect operands. excepted包含add,commit本身
         private static void RequireArgs(string[] args, int expected)
         {
             if (args.Length != expected)
