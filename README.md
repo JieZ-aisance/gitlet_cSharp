@@ -1,6 +1,6 @@
-# Gitlet en c# pour une démontration de compétences en dev C# .NET 🇫🇷
+# Gitlet en C#  🇫🇷
 
-### Author: Jie ZHAO
+### Author: Jie ZHAO, M2 en informatique, en recherche active d'un CDI.
 ### Updated: 2026-11-02
 ### Comparable au Cahier des charges dans la production du projet Gitlet/ Specification : https://sp21.datastructur.es/materials/proj/proj2/proj2
 ### 🇬🇧 English version is available below the french one.
@@ -24,6 +24,7 @@
  - 11.1. `checkout -- <nom du fichier>` — Restaure un fichier dans sa version du commit courant.
  - 11.2. `checkout <id du commit> -- <nom du fichier>` — Restaure un fichier dans sa version d'un commit donné (l'identifiant peut être abrégé).
  - 11.3. `checkout <nom de branche>` — Bascule sur une autre branche et met à jour le répertoire de travail en conséquence.
+12. `reset <id du commit>` — Ramène la branche courante et le répertoire de travail à l'état d'un commit donné, et vide l'index (l'identifiant peut être abrégé).
 
 ## Essayer
 
@@ -44,6 +45,7 @@ Clonez la branche `dev` dans un dossier local vide, installez le SDK .NET 10, pu
     dotnet run -- checkout -- <nom du fichier>
     dotnet run -- checkout <id du commit> -- <nom du fichier>
     dotnet run -- checkout <nom de branche>
+    dotnet run -- reset <commitId>
 
 
 
@@ -68,6 +70,7 @@ Clonez la branche `dev` dans un dossier local vide, installez le SDK .NET 10, pu
 - 11.1. `checkout -- <file name>` — Restores a file to its version in the current commit.
 - 11.2. `checkout <commit id> -- <file name>` — Restores a file to its version in a given commit (the id can be abbreviated).
 - 11.3. `checkout <branch name>` — Switches to another branch and updates the working directory to match it.
+12. `reset <commit id>` — Moves the current branch back to a given commit and restores the working directory to match it, clearing the staging area (the id can be abbreviated).
 
 
 ## Try it
@@ -89,6 +92,7 @@ Clone the `dev` branch into a clean local folder, install the .NET 10 SDK, then 
     dotnet run -- checkout -- <file name>
     dotnet run -- checkout <commit id> -- <file name>
     dotnet run -- checkout <branch name>
+    dotnet run -- reset <commitId>
 
 
 ### Use whichever tool you prefer (nano, vim, etc.) to create test files.
