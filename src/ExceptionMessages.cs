@@ -17,4 +17,5 @@ public static class ExceptionMessages
     public const string PleaseEnterCommand = "Please enter a command.";
     public const string NoSuchCommand = "No command with that name exists.";
     public const string IncorrectOperands = "Incorrect operands.";
+    public const string DeleteCurrentBranchForbiden = "Cannot remove the current branch.";
 }

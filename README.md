@@ -1,9 +1,9 @@
-# Gitlet en c# pour une demontration de competences en dev C# .NET pout obtenir un emploi junior développeuse 🇫🇷
+# Gitlet en c# pour une demontration de competences en dev C# .NET 🇫🇷
 
-### Author:Jie ZHAO, master in computer science, graduated in 2026 september, UGA(IM2AG, M2CCI)
-### Updated:2026-10-31
-### Comparable au Cahier des charges dans la production/ Specification : https://sp21.datastructur.es/materials/proj/proj2/proj2
-### version anglaise🇬🇧 plus bas
+### Author: Jie ZHAO, master en informatique de UGA(IM2AG, Grenoble), en recherche active de CDI développeuse junior, disponible immédiatement.
+### Updated: 2026-11-02
+### Comparable au Cahier des charges dans la production du projet Gitlet/ Specification : https://sp21.datastructur.es/materials/proj/proj2/proj2
+### 🇬🇧 English version is available below the french one.
 
 ====================================================================================
 
@@ -30,7 +30,6 @@
 Clonez la branche `dev` dans un dossier local vide, installez le SDK .NET 10, puis exécutez depuis le répertoire `src` :
 
     dotnet clean
-    dotnet clean
     dotnet build
     dotnet run -- init
     dotnet run -- add <nom du fichier>
@@ -40,7 +39,7 @@ Clonez la branche `dev` dans un dossier local vide, installez le SDK .NET 10, pu
     dotnet run -- global-log
     dotnet run -- find "<message du commit>"
     dotnet run -- branch <nom de branche>
-    dotnet run -- rm-branch <nom de branche>
+    dotnet run -- rmbranch <nom de branche>
     dotnet run -- status
     dotnet run -- checkout -- <nom du fichier>
     dotnet run -- checkout <id du commit> -- <nom du fichier>
@@ -85,7 +84,7 @@ Clone the `dev` branch into a clean local folder, install the .NET 10 SDK, then 
     dotnet run -- global-log
     dotnet run -- find "<commit message>"
     dotnet run -- branch <branch name>
-    dotnet run -- rm-branch <branch name>
+    dotnet run -- rmbranch <branch name>
     dotnet run -- status
     dotnet run -- checkout -- <file name>
     dotnet run -- checkout <commit id> -- <file name>

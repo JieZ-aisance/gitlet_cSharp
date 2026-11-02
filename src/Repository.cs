@@ -180,7 +180,8 @@ public class Repository
         string commitHash = _objects.Write("commit", bytes);
         
         //5,写入 默认分支refs/heads/master
-        File.WriteAllText(_paths.BranchFile("main"), commitHash);
+        var currentBranch = CurrentBranch();
+        File.WriteAllText(_paths.BranchFile(currentBranch), commitHash);
         
         
         //clean staging
@@ -394,6 +395,11 @@ public class Repository
         {
             throw new GitletException(ExceptionMessages.BranchNoExists);
             
+        }
+
+        if (branchName == CurrentBranch())
+        {
+            throw new GitletException(ExceptionMessages.DeleteCurrentBranchForbiden);
         }
         //sinon
         File.Delete(_paths.BranchFile(branchName));
