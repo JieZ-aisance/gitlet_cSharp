@@ -78,6 +78,10 @@ public static class Program
                     }
                     break;
                 
+                case "reset":
+                    repo.GitletReset(args[1]);
+                    break;
+                
                 
                 default:
                     throw new GitletException(ExceptionMessages.NoSuchCommand);

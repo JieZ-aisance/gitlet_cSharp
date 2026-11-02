@@ -607,6 +607,87 @@ public class Repository
     
     }
     
+    //reset
+    //检出给定提交所跟踪的所有文件。
+    //删除那些被跟踪、但在该提交中不存在的文件。
+    //同时把当前分支的头移动到那个提交节点。
+    public void GitletReset(string commitId)
+    {
+        //把工作区文件的版本回到某一个指定的commit中的文件版本
+        //复用checkout <commit id> -- <FileName>
+        
+        var commitList = new List<string>();
+        
+        //遍历这个目录，存在list里
+        foreach (var eachCommit in Directory.GetDirectories(_paths.CommitDir))
+        {
+            var prefixe = Path.GetFileName(eachCommit);
+            foreach (var file in Directory.GetFiles(eachCommit))
+            {
+                var hashtoprint = prefixe + Path.GetFileName(file);
+                commitList.Add(hashtoprint);
+            }
+        }
+
+        foreach (var commitHash in commitList)
+        {
+            if (commitHash.StartsWith(commitId)) //commitId is a part of the commitHash
+            {
+                //
+                var CurrentCommit = ReadCommit();
+                
+                var target = ReadCommit(commitHash);
+                
+                var files = target.Files;
+                
+                //存在未跟踪的文件
+                foreach (var  file in files.Keys)
+                {
+                    var path = Path.Combine(_workingDirectory, file);
+                    if (File.Exists(path) && !CurrentCommit.Files.ContainsKey(file))
+                    {
+                        throw new GitletException(ExceptionMessages.UntrackedFileInTheWay);
+                    }
+                }
+                
+                //写指定commit中的文件
+                foreach (var pair in files)
+                {
+                    var path = Path.Combine(_workingDirectory, pair.Key);
+                    var blobHash = pair.Value;
+
+                    byte[] content = _objects.Read("blob", blobHash);
+                    File.WriteAllBytes(Path.Combine(_workingDirectory, pair.Key), content);
+                }
+                
+                // 新增:当前跟踪、目标没有的文件 → 删除
+                foreach (var file in CurrentCommit.Files.Keys)
+                {
+                    if (!target.Files.ContainsKey(file))
+                    {
+                        var path = Path.Combine(_workingDirectory, file);
+                        if (File.Exists(path))
+                        {
+                            File.Delete(path);
+                        }
+                    }
+                }
+
+                //同时把当前分支的头移动到那个提交节点。
+                File.WriteAllText(_paths.BranchFile(CurrentBranch()), commitHash);
+                
+                //清空暂存区
+                var staging = ReadStaging();
+                staging.Additions.Clear();
+                staging.Removals.Clear();
+                File.WriteAllText(_paths.StagingFile, JsonSerializer.Serialize(staging));
+                return;
+            }
+        }
+
+        throw new GitletException(ExceptionMessages.CommitDoesNotExist);
+        
+    }
     
     //Helper
     private  Commit ReadCommit()
