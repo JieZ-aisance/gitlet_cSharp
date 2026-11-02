@@ -1,6 +1,6 @@
-# Gitlet en c# pour une demontration de competences en dev C# .NET 🇫🇷
+# Gitlet en c# pour une démontration de compétences en dev C# .NET 🇫🇷
 
-### Author: Jie ZHAO, master en informatique de UGA(IM2AG, Grenoble), en recherche active de CDI développeuse junior, disponible immédiatement.
+### Author: Jie ZHAO
 ### Updated: 2026-11-02
 ### Comparable au Cahier des charges dans la production du projet Gitlet/ Specification : https://sp21.datastructur.es/materials/proj/proj2/proj2
 ### 🇬🇧 English version is available below the french one.
@@ -39,7 +39,7 @@ Clonez la branche `dev` dans un dossier local vide, installez le SDK .NET 10, pu
     dotnet run -- global-log
     dotnet run -- find "<message du commit>"
     dotnet run -- branch <nom de branche>
-    dotnet run -- rmbranch <nom de branche>
+    dotnet run -- rm-branch <nom de branche>
     dotnet run -- status
     dotnet run -- checkout -- <nom du fichier>
     dotnet run -- checkout <id du commit> -- <nom du fichier>
@@ -84,7 +84,7 @@ Clone the `dev` branch into a clean local folder, install the .NET 10 SDK, then 
     dotnet run -- global-log
     dotnet run -- find "<commit message>"
     dotnet run -- branch <branch name>
-    dotnet run -- rmbranch <branch name>
+    dotnet run -- rm-branch <branch name>
     dotnet run -- status
     dotnet run -- checkout -- <file name>
     dotnet run -- checkout <commit id> -- <file name>
