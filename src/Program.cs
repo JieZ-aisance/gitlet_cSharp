@@ -1,8 +1,5 @@
-﻿using System.Text;
-namespace Gitlet;
+﻿namespace Gitlet;
 
-/** Driver class for Gitlet, a subset of the Git version-control system.
- */
 public static class Program
 {
     public static void Main(string[] args)
@@ -102,20 +99,18 @@ public static class Program
 
         catch (GitletException e)
         {
-            // 只打印消息,不打印堆栈
+ 
             Console.WriteLine(e.Message);
-
         }
     }
-
-    // 参数个数(含命令本身)不对 → spec 的 Incorrect operands. excepted包含add,commit本身
-        private static void RequireArgs(string[] args, int expected)
+    
+    private static void RequireArgs(string[] args, int expected)
+    {
+        if (args.Length != expected)
         {
-            if (args.Length != expected)
-            {
-                throw new GitletException(ExceptionMessages.IncorrectOperands);
-            }
+            throw new GitletException(ExceptionMessages.IncorrectOperands);
         }
     }
+}
     
 
