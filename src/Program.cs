@@ -50,7 +50,7 @@ public static class Program
                 case "branch":
                     repo.GitletBranch(args[1]);
                     break;
-                case "rmbranch":
+                case "rm-branch":
                     repo.GitletRmBranch(args[1]);
                     break;
                 case "status":
