@@ -1,6 +1,5 @@
 using System.Text.RegularExpressions;
 using Shouldly;
-using Xunit;
 
 namespace Gitlet.Tests.IntegrationTests;
 

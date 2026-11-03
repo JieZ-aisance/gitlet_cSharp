@@ -1,7 +1,7 @@
 <Solution>
-  <Folder Name="/scripts/">
-    <File Path="scripts/smoke_test.sh" />
-  </Folder>
+<!--  <Folder Name="/scripts/">-->
+<!--    <File Path="scripts/smoke_test.sh" />-->
+<!--  </Folder>-->
   <Folder Name="/src/">
     <Project Path="src/Gitlet.csproj" />
   </Folder>

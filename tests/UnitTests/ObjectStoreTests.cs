@@ -1,6 +1,5 @@
 using System.Text;
 using Shouldly;
-using Xunit;
 
 namespace Gitlet.Tests.UnitTests;
 
