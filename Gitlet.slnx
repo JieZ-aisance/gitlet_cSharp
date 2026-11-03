@@ -1,10 +1,11 @@
 <Solution>
-  <Folder Name="/scripts/" />
+<!--  <Folder Name="/scripts/">-->
+<!--    <File Path="scripts/smoke_test.sh" />-->
+<!--  </Folder>-->
   <Folder Name="/src/">
     <Project Path="src/Gitlet.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <File Path="tests\scratch.md" />
     <Project Path="tests/Gitlet.Tests.csproj" />
   </Folder>
 </Solution>
