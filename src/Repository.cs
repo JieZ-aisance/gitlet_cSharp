@@ -17,6 +17,9 @@ public class Repository
     private readonly string _workingDirectory;
     private readonly GitletPaths _paths;
     private readonly ObjectStore _objects;
+
+    private readonly RepositoryState _state;
+    
     //把路径和被存储的数据都视为对象
 
     public Repository(string workingDirectory)
@@ -24,6 +27,7 @@ public class Repository
         _workingDirectory = workingDirectory;
         _paths = new GitletPaths(workingDirectory);
         _objects = new ObjectStore(_paths);
+        _state = new RepositoryState(_paths, _objects);
     }
     //init
     public void Init()//Init 不需要返回任何东西——它的效果是在磁盘上建出目录和文件
@@ -88,14 +92,14 @@ public class Repository
         var content = File.ReadAllBytes(Path.Combine(_workingDirectory, filePath));
         
         //get the current commit
-        var commitCurr = ReadCommit();
+        var commitCurr =  _state.ReadCommit();
         
         var commitCurrFiles = commitCurr.Files; 
         
         //解析commit中的信息，看Files属性中存了哪些文件名和内容hash
         
         //read staging
-        var staging = ReadStaging();
+        var staging = _state.ReadStaging();
         
         staging.Removals.Remove(filePath);//避免当前文件同时出现在添加和删除里
         
@@ -133,18 +137,18 @@ public class Repository
             throw new GitletException(ExceptionMessages.PleaseEnterCommitMessage);
         }
 
-        if (ReadStaging().Additions.Count == 0 && ReadStaging().Removals.Count == 0)
+        if (_state.ReadStaging().Additions.Count == 0 && _state.ReadStaging().Removals.Count == 0)
         {
             throw new GitletException(ExceptionMessages.NoChangesAdded);
         }
         
         //读暂存区
-        var staging = ReadStaging();
+        var staging = _state.ReadStaging();
         
         //读当前commit hash
-        var commitParent = ReadCommit();
+        var commitParent = _state.ReadCommit();
         
-        var commitParentHash = GetCommitHash();
+        var commitParentHash = _state.GetCommitHash();
         
         // var commitParentFiles = commitParent.Files; 错误写法
         var commitParentFiles = new SortedDictionary<string, string>(commitParent.Files);
@@ -180,7 +184,7 @@ public class Repository
         string commitHash = _objects.Write("commit", bytes);
         
         //5,写入 默认分支refs/heads/master
-        var currentBranch = CurrentBranch();
+        var currentBranch = _state.CurrentBranch();
         File.WriteAllText(_paths.BranchFile(currentBranch), commitHash);
         
         
@@ -198,8 +202,8 @@ public class Repository
     //并且如果用户还没删,就从工作目录删除它(如果没被当前 commit 跟踪,就不要删)。
     public void GitletDelete(string filePath)
     {
-        var staging = ReadStaging();
-        var commitCurr = ReadCommit();
+        var staging = _state.ReadStaging();
+        var commitCurr = _state.ReadCommit();
         
         var isStaged = staging.Additions.ContainsKey(filePath);
         var isCommitted = commitCurr.Files.ContainsKey(filePath);
@@ -250,9 +254,9 @@ public class Repository
 
        var infomationToPrint = new StringBuilder();//optimisation var infomationToPrint = "";
        
-       var CurrentCommit = ReadCommit();
+       var CurrentCommit = _state.ReadCommit();
        
-       var CurrentHash = GetCommitHash();
+       var CurrentHash = _state.GetCommitHash();
        
        while (true)
        {
@@ -284,7 +288,7 @@ public class Repository
            }
            
            CurrentHash = CurrentCommit.ParentHashes[0];
-           CurrentCommit = ReadCommit(CurrentHash);
+           CurrentCommit = _state.ReadCommit(CurrentHash);
        }
        
         return  infomationToPrint.ToString();
@@ -304,7 +308,7 @@ public class Repository
             foreach (var file in Directory.GetFiles(commit))
             {
                 var hashtoprint = prefixe+Path.GetFileName(file);
-                var CurrentCommit = ReadCommit(hashtoprint);
+                var CurrentCommit = _state.ReadCommit(hashtoprint);
                 
                 var date = CurrentCommit.TimeStamp.ToLocalTime()
                     .ToString("ddd MMM d HH:mm:ss yyyy zzz", CultureInfo.InvariantCulture); 
@@ -344,7 +348,7 @@ public class Repository
             {
                 var hashtoprint = prefixe + Path.GetFileName(file);
                 
-                var CurrentCommit = ReadCommit(hashtoprint);
+                var CurrentCommit = _state.ReadCommit(hashtoprint);
 
                 // var date = CurrentCommit.TimeStamp.ToLocalTime()
                 //     .ToString("ddd MMM d HH:mm:ss yyyy zzz", CultureInfo.InvariantCulture);
@@ -380,7 +384,7 @@ public class Repository
             
         }
         //sinon
-        var commitCurrHash = GetCommitHash();
+        var commitCurrHash = _state.GetCommitHash();
         //public string RefHeadDirec => Path.Combine(GitletDir, "refs", "heads");
         File.WriteAllText(_paths.BranchFile(branchName), commitCurrHash);
         //Console.WriteLine("New branch created: " + branchName);
@@ -397,7 +401,7 @@ public class Repository
             
         }
 
-        if (branchName == CurrentBranch())
+        if (branchName == _state.CurrentBranch())
         {
             throw new GitletException(ExceptionMessages.DeleteCurrentBranchForbiden);
         }
@@ -414,7 +418,7 @@ public class Repository
         var infomationToPrint = new StringBuilder();
         infomationToPrint.Append("=== Branches ===\n");
 
-        var current = CurrentBranch();
+        var current = _state.CurrentBranch();
         var branches = Directory.GetFiles(_paths.RefHeadDirec)
             .Select(Path.GetFileName)
             .OrderBy(name => name, StringComparer.Ordinal);//按名字排序
@@ -441,7 +445,7 @@ public class Repository
         infomationToPrint.Append("\n");
         
         //staging
-        var staging = ReadStaging();
+        var staging = _state.ReadStaging();
 
         infomationToPrint.Append("=== Staged Files ===\n");
         foreach (var name in staging.Additions.Keys)
@@ -476,7 +480,7 @@ public class Repository
     //取出该文件在HEAD中的版本,放到工作目录中;如果工作目录里已经有这个文件,就覆盖它。新版本的文件不会被暂存。
     public void GitletCheckoutFile(string fileName)
     {
-        var commitCurr = ReadCommit();
+        var commitCurr = _state.ReadCommit();
         
         if (!commitCurr.Files.TryGetValue(fileName, out string blobHash))//参见add,如果存在就返回他的hash，不存在就抛异常
         {
@@ -513,7 +517,7 @@ public class Repository
         {
             if (commitHash.StartsWith(commitId))//commitId is a part of the commitHash
             {
-                var commit = ReadCommit(commitHash);
+                var commit = _state.ReadCommit(commitHash);
                 // public SortedDictionary<string, string> Files { get; init; }
                 var Filelist = commit.Files;
 
@@ -548,7 +552,7 @@ public class Repository
         
         
         //检查分支是不是当前分支
-        var currentBranch = CurrentBranch();
+        var currentBranch = _state.CurrentBranch();
         if(branchName == currentBranch)
         {
             throw new GitletException(ExceptionMessages.ALreadyOnTheBranch);
@@ -556,13 +560,13 @@ public class Repository
         
         
         //检查是否有未跟踪文件
-        var commitCurr = ReadCommit();
+        var commitCurr = _state.ReadCommit();
         //计算目标branch的哈希
         var branchPath = _paths.BranchFile(branchName);          
         
         var targetHash = File.ReadAllText(branchPath).Trim();    
         
-        var target = ReadCommit(targetHash);
+        var target = _state.ReadCommit(targetHash);
         
         foreach (var fileName in target.Files.Keys)
         {
@@ -600,7 +604,7 @@ public class Repository
         File.WriteAllText(_paths.HeadFile, $"ref: refs/heads/{branchName}");
         Console.WriteLine($"On the branch {branchName} now");
         // 清空暂存区
-        var staging = ReadStaging();
+        var staging = _state.ReadStaging();
         staging.Additions.Clear();
         staging.Removals.Clear();
         File.WriteAllText(_paths.StagingFile, JsonSerializer.Serialize(staging));
@@ -634,9 +638,9 @@ public class Repository
             if (commitHash.StartsWith(commitId)) //commitId is a part of the commitHash
             {
                 //
-                var CurrentCommit = ReadCommit();
+                var CurrentCommit = _state.ReadCommit();
                 
-                var target = ReadCommit(commitHash);
+                var target = _state.ReadCommit(commitHash);
                 
                 var files = target.Files;
                 
@@ -674,10 +678,10 @@ public class Repository
                 }
 
                 //同时把当前分支的头移动到那个提交节点。
-                File.WriteAllText(_paths.BranchFile(CurrentBranch()), commitHash);
+                File.WriteAllText(_paths.BranchFile(_state.CurrentBranch()), commitHash);
                 
                 //清空暂存区
-                var staging = ReadStaging();
+                var staging =_state.ReadStaging();
                 staging.Additions.Clear();
                 staging.Removals.Clear();
                 File.WriteAllText(_paths.StagingFile, JsonSerializer.Serialize(staging));
@@ -689,80 +693,80 @@ public class Repository
         
     }
     
-    //Helper
-    private  Commit ReadCommit()
-    {
-        //HEAD中存储的是ref: refs/heads/master，是当前分支的string格式的路径
-        var head = File.ReadAllText(_paths.HeadFile);
-        const string prefix = "ref: refs/heads/";
-        string branchCurr = head[prefix.Length..];
-        
-        //拼路径，拼到object下对应的文件的路径
-        var currentbranche_path = _paths.BranchFile(branchCurr);
-        
-        //读分支文件,拿到 commit 哈希(string)？这是读取了refs/heads/分支名中的纯文本哈希字符串么？
-        var commitHash = File.ReadAllText(currentbranche_path).Trim();
-        
-        //根据commit的hash值去读object路径下的对应的文件的内容
-        var commitCurr = _objects.Read("commit",commitHash);
-        
-        //把字节按照utf8编码成json
-        var commitCurrJson = Encoding.UTF8.GetString(commitCurr);
-        //反序列化，就是把json？
-        var commitCurrObj = JsonSerializer.Deserialize<Commit>(commitCurrJson);
-        
-        return commitCurrObj;
-    }
-    
-    //overload in order to get the hash of the commit's father hash
-    private Commit ReadCommit(string hash)
-    {
-        byte[] bytes = _objects.Read("commit",hash);
-        string json = Encoding.UTF8.GetString(bytes);
-        return JsonSerializer.Deserialize<Commit>(json)!;
-    }
-
-
-    private string GetCommitHash()
-    {
-        //HEAD中存储的是ref: refs/heads/master，是当前分支的string格式的路径
-        var head = File.ReadAllText(_paths.HeadFile);
-        const string prefix = "ref: refs/heads/";
-        string branchCurr = head[prefix.Length..];
-        
-        //拼路径，拼到object下对应的文件的路径
-        var currentbranche_path = _paths.BranchFile(branchCurr);
-        
-        //读分支文件,拿到 commit 哈希(string)？这是读取了refs/heads/分支名中的纯文本哈希字符串么？
-        var commitHash = File.ReadAllText(currentbranche_path).Trim();
-        
-        return commitHash;
-        
-    }
-    
-    private Staging ReadStaging()
-    {
-        if (!File.Exists(_paths.StagingFile))
-        {
-            return new Staging
-            {
-                Additions = [],
-                Removals = []
-            };
-        }
-
-        string json = File.ReadAllText(_paths.StagingFile);
-        
-        var stagingCurr = JsonSerializer.Deserialize<Staging>(json);
-        return  stagingCurr;
-    }
-    
-    // 读 HEAD,返回当前分支名,比如 "main"
-    private string CurrentBranch()
-    {
-        var head = File.ReadAllText(_paths.HeadFile).Trim();
-        const string prefix = "ref: refs/heads/";
-        return head[prefix.Length..];
-    }
-    
+    // //Helper
+    // private  Commit ReadCommit()
+    // {
+    //     //HEAD中存储的是ref: refs/heads/master，是当前分支的string格式的路径
+    //     var head = File.ReadAllText(_paths.HeadFile);
+    //     const string prefix = "ref: refs/heads/";
+    //     string branchCurr = head[prefix.Length..];
+    //     
+    //     //拼路径，拼到object下对应的文件的路径
+    //     var currentbranche_path = _paths.BranchFile(branchCurr);
+    //     
+    //     //读分支文件,拿到 commit 哈希(string)？这是读取了refs/heads/分支名中的纯文本哈希字符串么？
+    //     var commitHash = File.ReadAllText(currentbranche_path).Trim();
+    //     
+    //     //根据commit的hash值去读object路径下的对应的文件的内容
+    //     var commitCurr = _objects.Read("commit",commitHash);
+    //     
+    //     //把字节按照utf8编码成json
+    //     var commitCurrJson = Encoding.UTF8.GetString(commitCurr);
+    //     //反序列化，就是把json？
+    //     var commitCurrObj = JsonSerializer.Deserialize<Commit>(commitCurrJson);
+    //     
+    //     return commitCurrObj;
+    // }
+    //
+    // //overload in order to get the hash of the commit's father hash
+    // public Commit ReadCommit(string hash)
+    // {
+    //     byte[] bytes = _objects.Read("commit",hash);
+    //     string json = Encoding.UTF8.GetString(bytes);
+    //     return JsonSerializer.Deserialize<Commit>(json)!;
+    // }
+    //
+    //
+    // private string GetCommitHash()
+    // {
+    //     //HEAD中存储的是ref: refs/heads/master，是当前分支的string格式的路径
+    //     var head = File.ReadAllText(_paths.HeadFile);
+    //     const string prefix = "ref: refs/heads/";
+    //     string branchCurr = head[prefix.Length..];
+    //     
+    //     //拼路径，拼到object下对应的文件的路径
+    //     var currentbranche_path = _paths.BranchFile(branchCurr);
+    //     
+    //     //读分支文件,拿到 commit 哈希(string)？这是读取了refs/heads/分支名中的纯文本哈希字符串么？
+    //     var commitHash = File.ReadAllText(currentbranche_path).Trim();
+    //     
+    //     return commitHash;
+    //     
+    // }
+    //
+    // private Staging ReadStaging()
+    // {
+    //     if (!File.Exists(_paths.StagingFile))
+    //     {
+    //         return new Staging
+    //         {
+    //             Additions = [],
+    //             Removals = []
+    //         };
+    //     }
+    //
+    //     string json = File.ReadAllText(_paths.StagingFile);
+    //     
+    //     var stagingCurr = JsonSerializer.Deserialize<Staging>(json);
+    //     return  stagingCurr;
+    // }
+    //
+    // // 读 HEAD,返回当前分支名,比如 "main"
+    // private string CurrentBranch()
+    // {
+    //     var head = File.ReadAllText(_paths.HeadFile).Trim();
+    //     const string prefix = "ref: refs/heads/";
+    //     return head[prefix.Length..];
+    // }
+    //
 }

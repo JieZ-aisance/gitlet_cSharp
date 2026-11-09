@@ -92,7 +92,8 @@ public sealed class RepositoryState
     }
     
     //for merge
-    //find split point
+    //find split point 
+    //这里没有考虑有两个父的情况，只考虑了list，没考虑tree
     public string FindSplitPoint(string hash1, string hash2)
     {
         //把hash1的所有祖先装进一个List<string>
@@ -138,5 +139,8 @@ public sealed class RepositoryState
         return ancestors1[count-1];
         
     }
-    
+    // A ── B ── C ── M ── X      (current)
+    //     \        /
+    //     ── D ──── Y         (given)
+    //BFS
 }
