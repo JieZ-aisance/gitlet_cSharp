@@ -142,5 +142,63 @@ public sealed class RepositoryState
     // A ── B ── C ── M ── X      (current)
     //     \        /
     //     ── D ──── Y         (given)
-    //BFS
+    //BFS，广度优先算法，用来找有merge情况下的split point
+    //这里处理的是邻接链表 Dictionary<string, string[]>
+    //队列 
+    public string FindSplitPointBfs(string hash1, string hash2)
+    {
+        
+        // ── 第一步:从 hash1 出发,收集它自己和所有祖先 ──
+        var ancestors1 = new HashSet<string>();   // 已访问的 commit,也就是 hash1 的全部祖先
+        var queue1 = new Queue<string>();         // 待处理的 commit,先进先出
+        queue1.Enqueue(hash1);
+        
+        while (queue1.Count > 0)
+        {
+            var current = queue1.Dequeue();       // 从队头取一个
+
+            // Add 返回 false 表示已经在集合里了:处理过,跳过
+            if (!ancestors1.Add(current))
+            {
+                continue;
+            }
+
+            // 把它的每一个父都放进队尾(merge commit 有两个父,两个都要放)
+            foreach (var parent in ReadCommit(current).ParentHashes)
+            {
+                queue1.Enqueue(parent);
+            }
+        }
+        
+        // ── 第二步:从 hash2 出发,一层层往上找,第一个在 ancestors1 里的就是答案 ──
+        var visited2 = new HashSet<string>();
+        var queue2 = new Queue<string>();
+        queue2.Enqueue(hash2);
+
+        while (queue2.Count > 0)
+        {
+            var current = queue2.Dequeue();
+
+            if (!visited2.Add(current))
+            {
+                continue;
+            }
+
+            // 第一个同时也是 hash1 祖先的 commit,就是最近公共祖先
+            if (ancestors1.Contains(current))
+            {
+                return current;
+            }
+
+            foreach (var parent in ReadCommit(current).ParentHashes)
+            {
+                queue2.Enqueue(parent);
+            }
+        }
+
+        // 正常仓库里所有 commit 都能追溯到初始 commit,不会走到这里
+        throw new InvalidOperationException("No common ancestor found.");
+        
+    }
+    
 }
