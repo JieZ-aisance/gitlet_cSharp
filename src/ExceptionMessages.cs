@@ -18,4 +18,10 @@ public static class ExceptionMessages
     public const string NoSuchCommand = "No command with that name exists.";
     public const string IncorrectOperands = "Incorrect operands.";
     public const string DeleteCurrentBranchForbiden = "Cannot remove the current branch.";
+    
+    //for merge
+    public const string UncommittedChanges = "You have uncommitted changes.";
+    public const string CannotMergeWithItself = "Cannot merge a branch with itself.";
+    public const string GivenIsAncestor = "Given branch is an ancestor of the current branch.";
+    public const string FastForwarded = "Current branch fast-forwarded.";
 }
