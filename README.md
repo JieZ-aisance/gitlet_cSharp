@@ -6,7 +6,7 @@
 ### 🇬🇧 English version is available in README.EN.md.
 ### 💡Pour le détail du raisonnement et des algorithmes, consultez le code de la branche `dev` ; sur la branche `main`, les commentaires ont été retirés pour garder un code propre.
 ### 💡Les tests unitaires et d'intégration ont d'abord été générés sur la branche `test` avec Claude Code (CLI), en respectant mon style de code, puis relus et ajustés avant d'être fusionnés dans `dev`, et ensuite dans `main`.
-
+### repos sur github: https://github.com/JieZ-aisance/gitlet_cSharp
 
 ====================================================================================
 
