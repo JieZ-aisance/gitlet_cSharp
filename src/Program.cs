@@ -22,6 +22,8 @@ public static class Program
             }
 
             var repo = new Repository(Directory.GetCurrentDirectory());
+            
+            var mergescope = new GitletMergeScope(Directory.GetCurrentDirectory());
 
             switch (args[0])
             {
@@ -90,6 +92,11 @@ public static class Program
                 case "reset":
                     RequireArgs(args, 2);
                     repo.GitletReset(args[1]);
+                    break;
+                
+                case "merge" :
+                    RequireArgs(args, 2);
+                    mergescope.GitletMerge(args[1]);
                     break;
                 
                 

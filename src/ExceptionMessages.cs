@@ -21,7 +21,8 @@ public static class ExceptionMessages
     
     //for merge
     public const string UncommittedChanges = "You have uncommitted changes.";
-    public const string CannotMergeWithItself = "Cannot merge a branch with itself.";
-    public const string GivenIsAncestor = "Given branch is an ancestor of the current branch.";
+    public const string CannotMergeWithItself = "Cannot merge a branch with itself.";//
+    public const string GivenIsAncestor = "Given branch is an ancestor of the current branch.";//
     public const string FastForwarded = "Current branch fast-forwarded.";
+    public const string MergeConflict = "Merge conflict.";
 }
