@@ -3,7 +3,7 @@ namespace Gitlet;
 public static class ExceptionMessages
 {
     public const string FileDoesNotExist = "File does not exist.";
-    public const string UntrackedFileInTheWay = "the file is untracked.";
+    public const string UntrackedFileInTheWay = "There is an untracked file in the way; delete it, or add and commit it first.";
     public const string CommitDoesNotExist = "Commit does not exist.";
     public const string BranchAlreadyExists = "A branch with that name already exists.";
     public const string BranchNoExists = "A branch with that name does not exist.";

@@ -34,9 +34,6 @@ public class GitletMergeScope
         
        // var branchCurrFilesContents = branchCurrFiles.Values;
         
-        
-
-        
         //给定分支
         //拼路径
         var branchGivenPath = _paths.BranchFile(givenBranchName);
@@ -100,6 +97,17 @@ public class GitletMergeScope
             throw new GitletException(ExceptionMessages.FastForwarded);
         }
         
+        
+        //未跟踪文件挡路
+
+        foreach (var name in branchGivenFilesNames)
+        {
+            var path = Path.Combine(_workingDirectory, name);
+            if (File.Exists(path) && !branchCurrFiles.ContainsKey(name))
+            {
+                throw new GitletException(ExceptionMessages.UntrackedFileInTheWay);
+            }
+        }
         
         //merge 容器
       
