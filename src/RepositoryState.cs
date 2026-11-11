@@ -6,14 +6,15 @@ namespace Gitlet;
 public sealed class RepositoryState
 {
     
-    // private readonly string _workingDirectory;
+    private readonly string _workingDirectory;
     private readonly GitletPaths _paths;
     private readonly ObjectStore _objects;
     
-    public RepositoryState(GitletPaths paths, ObjectStore objects)
+    public RepositoryState(GitletPaths paths, ObjectStore objects, string workingDirectory)
     {
         _paths = paths;
         _objects = objects;
+        _workingDirectory = workingDirectory;
     }
     
     public Commit ReadCommit()
@@ -201,5 +202,19 @@ public sealed class RepositoryState
         
     }
     
+    //for merge conflit
+
+    public void WriteConflict(string name, string? currHash, string? givenHash,
+        SortedDictionary<string, string> files)
+    {
+        var currText = currHash == null ? "" : Encoding.UTF8.GetString(_objects.Read("blob", currHash));
+        var givenText = givenHash == null ? "" : Encoding.UTF8.GetString(_objects.Read("blob", givenHash));
+
+        var conflict = "<<<<<<< HEAD\n" + currText + "=======\n" + givenText + ">>>>>>>\n";
+        var bytes = Encoding.UTF8.GetBytes(conflict);
+
+        File.WriteAllBytes(Path.Combine(_workingDirectory, name), bytes);
+        files[name] = _objects.Write("blob", bytes);
+    }
     
 }

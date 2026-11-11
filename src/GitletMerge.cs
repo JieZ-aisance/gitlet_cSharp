@@ -19,7 +19,7 @@ public class GitletMergeScope
         _workingDirectory = workingDirectory;
         _paths = new GitletPaths(workingDirectory);
         _objects = new ObjectStore(_paths);
-        _state = new RepositoryState(_paths, _objects);
+        _state = new RepositoryState(_paths, _objects, workingDirectory);
     }
 
     public void GitletMerge(string givenBranchName)
@@ -104,6 +104,8 @@ public class GitletMergeScope
         //merge 容器
       
         var files = new SortedDictionary<string, string>(branchCurr.Files);
+        var hasConflits = false;
+        
         //在split点存在的文件
         
         //拿splitpointfiles出来遍历
@@ -112,8 +114,6 @@ public class GitletMergeScope
             //在curr和given中同时存在
             if (branchCurrFilesNames.Contains(name) && branchGivenFilesNames.Contains(name))
             {
-               
-                //规则3:在当前分支和给定分支中以相同方式被修改的文件(即两边现在内容相同,或者两边都被删除),合并时保持不变。
                 
                 //取给定分支的版本
                 var fileGivenContent = branchGivenFiles[name];
@@ -137,10 +137,15 @@ public class GitletMergeScope
                     files[name] = fileCurrContent;
                 }
 
-                if (fileGivenContent != fileSplitPointContent && fileCurrContent != fileSplitPointContent)
+                if (fileGivenContent != fileSplitPointContent
+                    && fileCurrContent != fileSplitPointContent 
+                    && fileGivenContent != fileCurrContent)
                 {
                     //冲突conflit
-                    throw new GitletException(ExceptionMessages.MergeConflict);
+                    //规则3:给定和当前都改了，而且改的不一样
+                    _state.WriteConflict(name, fileCurrContent, fileGivenContent,files);
+                    hasConflits = true;
+                    //throw new GitletException(ExceptionMessages.MergeConflict);
                     
                 }
                 
@@ -175,7 +180,9 @@ public class GitletMergeScope
                 
                 if (fileGivenContent != fileSplitPointContent)
                 {
-                    //规则5:当前分支中不存在，在给定分支修改的文件 
+                 
+                    _state.WriteConflict(name, null, fileGivenContent, files);    // 当前那边是 null
+                    hasConflits = true;
                     
                     throw new GitletException(ExceptionMessages.MergeConflict);
                 }
@@ -184,16 +191,16 @@ public class GitletMergeScope
             
         }
         
-        //在split点不存在的文件
-       
-        foreach (var name in branchCurrFilesNames)
-        {
-            //规则1:只在当前分支存在的文件，保持原样
-            if (!splitPointFilesNames.Contains(name) && !branchGivenFilesNames.Contains(name))
-            {
-                continue;
-            }
-        }
+        // //在split点不存在的文件
+        //
+        // foreach (var name in branchCurrFilesNames)
+        // {
+        //     //规则1:只在当前分支存在的文件，保持原样
+        //     if (!splitPointFilesNames.Contains(name) && !branchGivenFilesNames.Contains(name))
+        //     {
+        //         continue;
+        //     }
+        // }
 
         
         //规则2:只在给定分支存在的文件，被检查出并暂存，进入staging，不进commit
@@ -209,7 +216,7 @@ public class GitletMergeScope
             }
         }
         
-        //split 没有、当前和给定都有,而且内容不同——spec 说这算冲突:
+        //split 没有、当前和给定都有,而且内容不同:
         foreach (var name in branchGivenFilesNames)
         {
 
@@ -223,7 +230,10 @@ public class GitletMergeScope
                     if (branchGivenFiles[name]!= branchCurrFiles[name])
                     {
                         //冲突conflit
-                        throw new GitletException(ExceptionMessages.MergeConflict);
+                        //throw new GitletException(ExceptionMessages.MergeConflict);
+                         _state.WriteConflict(name, branchCurrFiles[name], branchGivenFiles[name], files);
+                        hasConflits = true;
+                        
                     
                     }
                     
