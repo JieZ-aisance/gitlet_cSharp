@@ -36,6 +36,12 @@ public class GitletPaths
         {
             return Path.Combine(CommitDir, hash[..2], hash[2..]);
         }
+        //add branch type for merge
+        if (type == "branch")
+        {
+            return BranchFile(hash);
+        }
+        
         throw new ArgumentException($"Unknown object kind: {type}");
     }
         

@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\src\Gitlet.csproj" />
   </ItemGroup>
+  
 
   <ItemGroup>
     <Compile Remove="TestResults\9e99034e-3979-413a-9938-10f25d61fa4e\**" />

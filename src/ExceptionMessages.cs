@@ -2,7 +2,6 @@ namespace Gitlet;
 
 public static class ExceptionMessages
 {
-    
     public const string FileDoesNotExist = "File does not exist.";
     public const string UntrackedFileInTheWay = "the file is untracked.";
     public const string CommitDoesNotExist = "Commit does not exist.";
@@ -19,5 +18,4 @@ public static class ExceptionMessages
     public const string NoSuchCommand = "No command with that name exists.";
     public const string IncorrectOperands = "Incorrect operands.";
     public const string DeleteCurrentBranchForbiden = "Cannot remove the current branch.";
-    
 }
