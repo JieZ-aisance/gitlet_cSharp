@@ -32,16 +32,29 @@ public class GitletMergeScope
         
         var branchCurrFilesNames = branchCurrFiles.Keys;
         
-        var branchCurrFilesContents = branchCurrFiles.Values;
+       // var branchCurrFilesContents = branchCurrFiles.Values;
+        
+        
+
         
         //给定分支
         //拼路径
         var branchGivenPath = _paths.BranchFile(givenBranchName);
+             
+        //如果给定分支不存在，会报错
+    
+        if (!_objects.Exists("branch", branchGivenPath))
+        {
+            throw new GitletException(ExceptionMessages.BranchNoExists);
+        }
+
+
         var branchGivenHash = File.ReadAllText(branchGivenPath).Trim();
+   
         var branchGiven = _state.ReadCommit(branchGivenHash);
         var branchGivenFiles = branchGiven.Files;
         var branchGivenFilesNames = branchGivenFiles.Keys;
-        var branchGivenFilesContents = branchGivenFiles.Values;
+      
         
         //exceptions
         //public const string CannotMergeWithItself = "Cannot merge a branch with itself.";
@@ -182,7 +195,7 @@ public class GitletMergeScope
         foreach (var name in branchGivenFilesNames)
         {
             //规则2:只在给定分支存在的文件，被检查出并暂存，进入staging，不进commit
-            if (!splitPointFilesNames.Contains(name) && !branchGivenFilesNames.Contains(name))
+            if (!splitPointFilesNames.Contains(name) && !branchCurrFilesNames.Contains(name))
             {
                 var blobHash = branchGivenFiles[name];
                 var content = _objects.Read("blob", blobHash);
