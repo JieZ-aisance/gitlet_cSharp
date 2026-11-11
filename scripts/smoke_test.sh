@@ -57,7 +57,7 @@ echo "== branch / checkout"
 check "create branch"        ""  gitlet branch dev
 check "branch exists"        "A branch with that name already exists."  gitlet branch dev
 check "checkout current"     "No need to checkout the current branch."  gitlet checkout main
-check "checkout missing"     "No such branch exists."  gitlet checkout nothing
+check "checkout missing"     "A branch with that name does not exist."  gitlet checkout nothing
 
 echo "== checkout file"
 echo "changed" > hello.txt

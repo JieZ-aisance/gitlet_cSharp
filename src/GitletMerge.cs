@@ -58,11 +58,13 @@ public class GitletMergeScope
         
         //exceptions
         //public const string CannotMergeWithItself = "Cannot merge a branch with itself.";
-        if (branchCurrHash == branchGivenHash)
+        //比较分支名，而不是比较哈希。因为不同的分支，完全可以指向同一个commit
+        if (_state.CurrentBranch() == givenBranchName)
         {
             throw new GitletException(ExceptionMessages.CannotMergeWithItself);
         }
-        //staging area not empty
+        
+        //staging area not empty暂存区有文件
         if (_state.ReadStaging().Additions.Count != 0 || _state.ReadStaging().Removals.Count != 0)
         {
 
@@ -79,25 +81,28 @@ public class GitletMergeScope
         
         var splitPointFilesNames = splitPointFiles.Keys;
         
-        var splitPointFilesContents = splitPointFiles.Values;
+        // var splitPointFilesContents = splitPointFiles.Values;
         
         //几种exception
        
         //public const string GivenIsAncestor = "Given branch is an ancestor of the current branch.";
+        //给定分支是现在分支的祖先
         if (branchGivenHash == splitPoint)
         {
             throw new GitletException(ExceptionMessages.GivenIsAncestor);
         }
         
-        //public const string GivenIsAncestor = "Given branch is an ancestor of the current branch.";
+     
+        // 当前分支是给定分支的祖先:快进，执行reset
         if (branchCurrHash == splitPoint)
         {
+            new Repository(_workingDirectory).GitletReset(branchGivenHash);
             throw new GitletException(ExceptionMessages.FastForwarded);
         }
         
         
         //merge 容器
-        //var mergeCommit = new Commit();
+      
         var files = new SortedDictionary<string, string>(branchCurr.Files);
         //在split点存在的文件
         
@@ -250,7 +255,5 @@ public class GitletMergeScope
         
     }
     
-
-
     
 }
