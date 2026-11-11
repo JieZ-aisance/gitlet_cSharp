@@ -184,7 +184,7 @@ public class GitletMergeScope
                     _state.WriteConflict(name, null, fileGivenContent, files);    // 当前那边是 null
                     hasConflits = true;
                     
-                    throw new GitletException(ExceptionMessages.MergeConflict);
+                    //throw new GitletException(ExceptionMessages.MergeConflict);
                 }
             
             }
@@ -230,9 +230,10 @@ public class GitletMergeScope
                     if (branchGivenFiles[name]!= branchCurrFiles[name])
                     {
                         //冲突conflit
-                        //throw new GitletException(ExceptionMessages.MergeConflict);
+                       
                          _state.WriteConflict(name, branchCurrFiles[name], branchGivenFiles[name], files);
                         hasConflits = true;
+                        //throw new GitletException(ExceptionMessages.MergeConflict);
                         
                     
                     }
@@ -242,6 +243,8 @@ public class GitletMergeScope
             }
             
         }
+        
+       
         //create merge commit
         // 1. 造 commit 对象
         
@@ -262,6 +265,13 @@ public class GitletMergeScope
 
         // 3. 当前分支指向这个新 commit
         File.WriteAllText(_paths.BranchFile(currentBranchName), mergeCommitHash);
+        
+        
+        //conflit最后抛异常
+        if (hasConflits)
+        {
+            throw new GitletException(ExceptionMessages.MergeConflict);
+        }
         
     }
     

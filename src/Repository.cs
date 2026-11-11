@@ -27,7 +27,7 @@ public class Repository
         _workingDirectory = workingDirectory;
         _paths = new GitletPaths(workingDirectory);
         _objects = new ObjectStore(_paths);
-        _state = new RepositoryState(_paths, _objects);
+        _state = new RepositoryState(_paths, _objects,_workingDirectory);
     }
     //init
     public void Init()//Init 不需要返回任何东西——它的效果是在磁盘上建出目录和文件
