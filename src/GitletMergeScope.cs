@@ -11,7 +11,6 @@ public class GitletMergeScope
     private readonly string _workingDirectory;
     private readonly GitletPaths _paths;
     private readonly ObjectStore _objects;
-
     private readonly RepositoryState _state;
     
     public GitletMergeScope(string workingDirectory)

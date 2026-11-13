@@ -1,13 +1,40 @@
 # Gitlet en C#  🇫🇷
 
-### Author: Jie ZHAO, diplomée M2 en informatique 2026, en recherche active d'un CDI.
-### Updated: 2026-11-02
+### Author: Jie ZHAO
+### Updated: 2026-11-13
 ### Cahier des charges du projet Gitlet: https://sp21.datastructur.es/materials/proj/proj2/proj2
-### 🇬🇧 English version is available below the french one.
+### 🇬🇧 English version is available in README.en.md.
+### 💡Pour le détail du raisonnement et des algorithmes, consultez le code de la branche `dev` ; sur la branche `main`, les commentaires ont été retirés pour garder un code propre.
+### 💡Les tests unitaires et d'intégration ont d'abord été générés sur la branche `test` avec Claude Code (CLI), en respectant mon style de code, puis relus et ajustés avant d'être fusionnés dans `dev`, et ensuite dans `main`.
+### 💡 Qualité du code : à chaque push et à chaque pull request, un workflow GitHub Actions compile le projet, exécute les tests (xUnit), mesure la couverture de code (Coverlet) et envoie le tout à SonarQube Cloud pour l'analyse statique ; la quality gate (notamment ≥ 80 % de couverture sur le nouveau code) est vérifiée avant chaque fusion.
+
+### SonarQube: https://sonarcloud.io/dashboard?id=JieZ-aisance_gitlet_cShar
+### repos sur github: https://github.com/JieZ-aisance/gitlet_cSharp
 
 ====================================================================================
 
-## Version Française 🇫🇷
+## Réflexion et Démarche de développement
+
+Git est l'outil de gestion de versions que les développeurs utilisent au quotidien ; qu'il s'agisse d'un projet personnel ou d'un projet en équipe, il est indispensable.
+
+Son principe de stockage repose sur l'adressage par contenu : on lit les octets du contenu d'un fichier, on en calcule le hachage, puis on utilise ce hachage comme nom pour stocker ce contenu.
+
+Ce projet implémente les fonctionnalités principales de Git en suivant le cahier des charges.
+
+Le développement se déroule en deux phases, avec des stratégies différentes : la première phase couvre toutes les commandes du cahier des charges à l'exception de `merge` ; la seconde phase sera consacrée à `merge`.
+
+**Phase 1.** J'ai d'abord conçu les classes nécessaires à Gitlet en m'inspirant de la structure de répertoires du vrai Git. Les commandes étant de complexité modérée, elles sont toutes implémentées dans `Repository`, avec une architecture plutôt plate. L'ordre de développement a été le suivant :
+
+1. implémenter toutes les fonctionnalités ;
+2. écrire le test de fumée (smoke test) ;
+3. écrire les tests unitaires et d'intégration.
+
+**Phase 2.** J'ai ensuite implémenté la commande "merge" dans "GitletMergeScope" en suivant les étapes identiques que la phase 1.
+
+**Phase 3.**  Une fois toutes les fonctionnalités terminées, je prévois de découper `Repository` et refecto le projet. 
+
+
+
 ## Commandes implémentées
 
 1. `init` — Crée un nouveau dépôt Gitlet dans le répertoire courant, avec un commit initial vide sur la branche par défaut.
@@ -25,6 +52,7 @@
  - 11.2. `checkout <id du commit> -- <nom du fichier>` — Restaure un fichier dans sa version d'un commit donné (l'identifiant peut être abrégé).
  - 11.3. `checkout <nom de branche>` — Bascule sur une autre branche et met à jour le répertoire de travail en conséquence.
 12. `reset <id du commit>` — Ramène la branche courante et le répertoire de travail à l'état d'un commit donné, et vide l'index (l'identifiant peut être abrégé).
+13. `merge <nom de branche>` — Fusionne la branche donnée dans la branche courante et crée un commit de fusion ; les fichiers en conflit sont marqués et signalés.
 
 ## Démarrage rapide
 
@@ -33,15 +61,11 @@
     cd ~
     git clone https://github.com/JieZ-aisance/gitlet_cSharp.git
     cd gitlet_cSharp
+    dotnet test tests
     dotnet build src
 
-### 2. Vérifier que tout fonctionne
 
-    ./scripts/smoke_test.sh
-
-Ce script exécute les principales commandes dans un dossier temporaire, compare leur sortie avec le résultat attendu, puis supprime tout ce qu'il a créé. Il doit se terminer par `Failed: 0`.
-
-### 3. Essayer Gitlet
+### 2. Essayer Gitlet
 
 Travaillez dans un dossier séparé, afin que le dépôt `.gitlet` et les fichiers de test restent en dehors du code source :
 
@@ -71,48 +95,14 @@ Depuis un dossier de travail situé en dehors du code source (voir ci-dessus) :
     gitlet checkout <id du commit> -- <nom du fichier>
     gitlet checkout <nom de branche>
     gitlet reset <id du commit>
+    gitlet merge <nom de branche>
 
 
-====================================================================================
-## English version 🇬🇧
-## Implemented commands
-
-1. `init` — Creates a new Gitlet repository in the current directory, with an initial empty commit on the default branch.
-2. `add <file name>` — Stages the current version of a file for the next commit.
-3. `commit "<message>"` — Saves a snapshot of the staged changes as a new commit on the current branch.
-4. `rm <file name>` — Unstages a file, and if it is tracked, marks it for removal and deletes it from the working directory.
-5. `log` — Shows the history of the current branch, from the latest commit back to the initial one.
-6. `global-log` — Shows every commit ever made in the repository, regardless of branch.
-7. `find "<message>"` — Prints the ids of all commits whose message matches exactly.
-8. `branch <branch name>` — Creates a new branch pointing at the current commit, without switching to it.
-9. `rm-branch <branch name>` — Deletes a branch pointer; the commits themselves are kept.
-10. `status` — Lists the branches (current one marked with `*`) and the files staged for addition or removal.
-11. `checkout`
-- 11.1. `checkout -- <file name>` — Restores a file to its version in the current commit.
-- 11.2. `checkout <commit id> -- <file name>` — Restores a file to its version in a given commit (the id can be abbreviated).
-- 11.3. `checkout <branch name>` — Switches to another branch and updates the working directory to match it.
-12. `reset <commit id>` — Moves the current branch back to a given commit and restores the working directory to match it, clearing the staging area (the id can be abbreviated).
-
-
-## Quick start
-
-### 1. Clone and build the project
-
-    cd ~
-    git clone https://github.com/JieZ-aisance/gitlet_cSharp.git
-    cd gitlet_cSharp
-    dotnet build src
-
-### 2. Run the smoke test
+##  Smoke test(optionnnel) 
 
     ./scripts/smoke_test.sh
 
-### 3. Try Gitlet in a separate folder
+Ce script exécute les principales commandes dans un dossier temporaire, compare leur sortie avec le résultat attendu, puis supprime tout ce qu'il a créé. Il doit se terminer par `Failed: 0`.
 
-    alias gitlet='dotnet run --project ~/gitlet_cSharp/src --'
-    mkdir ~/gitlet-demo && cd ~/gitlet-demo
-    gitlet init
-    echo "hello" > hello.txt
-    gitlet add hello.txt
-    gitlet commit "add hello"
-    gitlet log
+
+
