@@ -3,7 +3,8 @@ on:
   push:
     branches:
       - main
-      - dev                    # 新增:dev 上推送也触发
+      - dev 
+      - test # 新增:dev 上推送也触发
   pull_request:
     types: [opened, synchronize, reopened]
   workflow_dispatch:           # 新增:可以在 Actions 页面手动运行
