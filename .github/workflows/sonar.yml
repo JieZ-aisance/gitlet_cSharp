@@ -1,0 +1,45 @@
+name: SonarQube
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonar:
+    name: Build, test and analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0            # 完整历史,SonarQube 要用它判断哪些是新代码
+
+      - name: Set up JDK 17         # SonarScanner 本身需要 Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install SonarScanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Build, test and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet-sonarscanner begin \
+            /k:"你的project-key" \
+            /o:"你的organization-key" \
+            /d:sonar.token="${SONAR_TOKEN}" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+          dotnet restore Gitlet.slnx
+          dotnet build Gitlet.slnx --no-restore --no-incremental
+          dotnet test tests --no-build --collect:"XPlat Code Coverage;Format=opencover"
+          dotnet-sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
