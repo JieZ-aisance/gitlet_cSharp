@@ -6,7 +6,9 @@
 ### 🇫🇷 The French version is available in README.md.
 ### 💡 For the detailed reasoning and algorithms, see the code on the `dev` branch; on the `main` branch, comments have been removed to keep the code clean.
 ### 💡 The unit and integration tests were first generated on the `test` branch with Claude Code (CLI), following my coding style, then reviewed and adjusted before being merged into `dev`, and then into `main`.
+### 💡 Code quality: on every push and every pull request, a GitHub Actions workflow builds the project, runs the tests (xUnit), measures code coverage (Coverlet) and sends everything to SonarQube Cloud for static analysis; the quality gate (including ≥ 80% coverage on new code) is checked before each merge.
 
+### SonarQube: https://sonarcloud.io/dashboard?id=JieZ-aisance_gitlet_cSharp
 
 ====================================================================================
 
@@ -26,10 +28,9 @@ Development is split into phases, each with a different strategy: the first phas
 2. write the smoke test;
 3. write the unit and integration tests.
 
-**Phase 2.** Since `merge` is more complex, I plan to split it into several handlers and implement it using a TDD (test-driven development) approach.
+**Phase 2.**  I then implemented the merge command in GitletMergeScope, following the same steps as in Phase 1.
 
-**Phase 3.** Once all features are complete, I plan to split `Repository`. At nearly 700 lines, it is too long: it violates the Single Responsibility Principle (the "S" in SOLID) and has become a "God class".
-
+**Phase 3.**  Once all features are complete, I plan to split Repository and refactor the project.
 
 
 ## Implemented commands
@@ -49,6 +50,8 @@ Development is split into phases, each with a different strategy: the first phas
     - 11.2. `checkout <commit id> -- <file name>` — Restores a file to its version in a given commit (the id can be abbreviated).
     - 11.3. `checkout <branch name>` — Switches to another branch and updates the working directory to match it.
 12. `reset <commit id>` — Moves the current branch back to a given commit and restores the working directory to match it, clearing the staging area (the id can be abbreviated).
+13. `merge <branch name>` — Merges the given branch into the current branch and creates a merge commit; conflicting files are marked and reported.
+
 
 ## Quick start
 
@@ -91,6 +94,7 @@ From a working folder located outside the source code (see above):
     gitlet checkout <commit id> -- <file name>
     gitlet checkout <branch name>
     gitlet reset <commit id>
+    gitlet merge <branch name>
 
 
 ## Smoke test (optional)

@@ -1,11 +1,14 @@
 # Gitlet en C#  🇫🇷
 
 ### Author: Jie ZHAO
-### Updated: 2026-11-02
+### Updated: 2026-11-13
 ### Cahier des charges du projet Gitlet: https://sp21.datastructur.es/materials/proj/proj2/proj2
-### 🇬🇧 English version is available in README.EN.md.
+### 🇬🇧 English version is available in README.en.md.
 ### 💡Pour le détail du raisonnement et des algorithmes, consultez le code de la branche `dev` ; sur la branche `main`, les commentaires ont été retirés pour garder un code propre.
 ### 💡Les tests unitaires et d'intégration ont d'abord été générés sur la branche `test` avec Claude Code (CLI), en respectant mon style de code, puis relus et ajustés avant d'être fusionnés dans `dev`, et ensuite dans `main`.
+### 💡 Qualité du code : à chaque push et à chaque pull request, un workflow GitHub Actions compile le projet, exécute les tests (xUnit), mesure la couverture de code (Coverlet) et envoie le tout à SonarQube Cloud pour l'analyse statique ; la quality gate (notamment ≥ 80 % de couverture sur le nouveau code) est vérifiée avant chaque fusion.
+
+### SonarQube: https://sonarcloud.io/dashboard?id=JieZ-aisance_gitlet_cShar
 ### repos sur github: https://github.com/JieZ-aisance/gitlet_cSharp
 
 ====================================================================================
@@ -26,10 +29,9 @@ Le développement se déroule en deux phases, avec des stratégies différentes 
 2. écrire le test de fumée (smoke test) ;
 3. écrire les tests unitaires et d'intégration.
 
-**Phase 2.** La commande `merge` étant plus complexe, je prévois de la découper en plusieurs handlers et de l'implémenter selon une approche TDD (développement piloté par les tests).
+**Phase 2.** J'ai ensuite implémenté la commande "merge" dans "GitletMergeScope" en suivant les étapes identiques que la phase 1.
 
-**Phase 3.** Une fois toutes les fonctionnalités terminées, je prévois de découper `Repository`. 
-Avec près de 700 lignes, trop longue, elle enfreint le principe de responsabilité unique (le « S » de SOLID) et est devenue une « classe Dieu » .
+**Phase 3.**  Une fois toutes les fonctionnalités terminées, je prévois de découper `Repository` et refecto le projet. 
 
 
 
@@ -50,6 +52,7 @@ Avec près de 700 lignes, trop longue, elle enfreint le principe de responsabili
  - 11.2. `checkout <id du commit> -- <nom du fichier>` — Restaure un fichier dans sa version d'un commit donné (l'identifiant peut être abrégé).
  - 11.3. `checkout <nom de branche>` — Bascule sur une autre branche et met à jour le répertoire de travail en conséquence.
 12. `reset <id du commit>` — Ramène la branche courante et le répertoire de travail à l'état d'un commit donné, et vide l'index (l'identifiant peut être abrégé).
+13. `merge <nom de branche>` — Fusionne la branche donnée dans la branche courante et crée un commit de fusion ; les fichiers en conflit sont marqués et signalés.
 
 ## Démarrage rapide
 
@@ -92,9 +95,10 @@ Depuis un dossier de travail situé en dehors du code source (voir ci-dessus) :
     gitlet checkout <id du commit> -- <nom du fichier>
     gitlet checkout <nom de branche>
     gitlet reset <id du commit>
+    gitlet merge <nom de branche>
 
 
-##  Smoke test(optionnnel)
+##  Smoke test(optionnnel) 
 
     ./scripts/smoke_test.sh
 
