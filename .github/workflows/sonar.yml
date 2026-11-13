@@ -3,8 +3,10 @@ on:
   push:
     branches:
       - main
+      - dev                    # 新增:dev 上推送也触发
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:           # 新增:可以在 Actions 页面手动运行
 jobs:
   build:
     name: Build and analyze
@@ -14,10 +16,14 @@ jobs:
         uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
         with:
           java-version: 21
-          distribution: 'zulu' # Alternative distribution options are available.
+          distribution: 'zulu'
+      - name: Set up .NET 10       # 新增
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
       - name: Cache SonarQube Cloud packages
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
@@ -42,6 +48,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"JieZ-aisance_gitlet_cSharp" /o:"jiez-aisance" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-          dotnet build
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"JieZ-aisance_gitlet_cSharp" /o:"jiez-aisance" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+          dotnet build Gitlet.slnx
+          dotnet test tests --no-build --collect:"XPlat Code Coverage;Format=opencover"
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
