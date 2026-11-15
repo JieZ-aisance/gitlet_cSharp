@@ -1,18 +1,18 @@
 # Gitlet in C# 🇬🇧
 
 ### Author: Jie ZHAO
-### Updated: 2026-11-02
+### Updated: 2026-11-15
 ### Gitlet project specification: https://sp21.datastructur.es/materials/proj/proj2/proj2
 ### 🇫🇷 The French version is available in README.md.
 ### 💡 For the detailed reasoning and algorithms, see the code on the `dev` branch; on the `main` branch, comments have been removed to keep the code clean.
 ### 💡 The unit and integration tests were first generated on the `test` branch with Claude Code (CLI), following my coding style, then reviewed and adjusted before being merged into `dev`, and then into `main`.
-### 💡 Code quality: on every push and every pull request, a GitHub Actions workflow builds the project, runs the tests (xUnit), measures code coverage (Coverlet) and sends everything to SonarQube Cloud for static analysis; the quality gate (including ≥ 80% coverage on new code) is checked before each merge.
+### 💡 Code quality: on every push and every pull request, a GitHub Actions workflow builds the project, runs the tests (xUnit), measures code coverage (Coverlet) and sends everything to SonarQube Cloud for static analysis; the quality gate is checked before each merge.
 
 ### SonarQube: https://sonarcloud.io/dashboard?id=JieZ-aisance_gitlet_cSharp
 
 ====================================================================================
 
-## Development approach
+## Introduction of the project and Development approach
 
 Git is the version control tool developers use every day; whether for a personal project or a team project, it is indispensable.
 
@@ -30,7 +30,7 @@ Development is split into phases, each with a different strategy: the first phas
 
 **Phase 2.**  I then implemented the merge command in GitletMergeScope, following the same steps as in Phase 1.
 
-**Phase 3.**  Once all features are complete, I plan to split Repository and refactor the project.
+**Phase 3.** Refactoring: I extracted an `ICommand` interface shared by all commands, and split the methods of `Repository` corresponding to the commands in the specification into dedicated classes named `Command<CommandName>` (for example `CommandAdd`, `CommandCommit`, `CommandRm`). I renamed the former `RepositoryState` class to `Repository`, a name that better reflects its role, and updated the unit and integration tests accordingly.
 
 
 ## Implemented commands

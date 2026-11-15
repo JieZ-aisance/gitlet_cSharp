@@ -97,17 +97,14 @@ public static class Program
                     new CommandMerge().Execute(contexte, args);
                     break;
                 
-                
                 default:
                     throw new GitletException(ExceptionMessages.NoSuchCommand);
                 
-                   
             }
         }
 
         catch (GitletException e)
         {
- 
             Console.WriteLine(e.Message);
         }
     }

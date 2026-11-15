@@ -1,12 +1,12 @@
 # Gitlet en C#  🇫🇷
 
 ### Author: Jie ZHAO
-### Updated: 2026-11-13
+### Updated: 2026-11-15
 ### Cahier des charges du projet Gitlet: https://sp21.datastructur.es/materials/proj/proj2/proj2
 ### 🇬🇧 English version is available in README.en.md.
 ### 💡Pour le détail du raisonnement et des algorithmes, consultez le code de la branche `dev` ; sur la branche `main`, les commentaires ont été retirés pour garder un code propre.
 ### 💡Les tests unitaires et d'intégration ont d'abord été générés sur la branche `test` avec Claude Code (CLI), en respectant mon style de code, puis relus et ajustés avant d'être fusionnés dans `dev`, et ensuite dans `main`.
-### 💡 Qualité du code : à chaque push et à chaque pull request, un workflow GitHub Actions compile le projet, exécute les tests (xUnit), mesure la couverture de code (Coverlet) et envoie le tout à SonarQube Cloud pour l'analyse statique ; la quality gate (notamment ≥ 80 % de couverture sur le nouveau code) est vérifiée avant chaque fusion.
+### 💡 Qualité du code : à chaque push et à chaque pull request, un workflow GitHub Actions compile le projet, exécute les tests (xUnit), mesure la couverture de code (Coverlet) et envoie le tout à SonarQube Cloud pour l'analyse statique ; la quality gate est vérifiée avant chaque fusion.
 
 ### SonarQube: https://sonarcloud.io/dashboard?id=JieZ-aisance_gitlet_cShar
 ### repos sur github: https://github.com/JieZ-aisance/gitlet_cSharp
@@ -31,7 +31,7 @@ Le développement se déroule en deux phases, avec des stratégies différentes 
 
 **Phase 2.** J'ai ensuite implémenté la commande "merge" dans "GitletMergeScope" en suivant les étapes identiques que la phase 1.
 
-**Phase 3.**  Une fois toutes les fonctionnalités terminées, je prévois de découper `Repository` et refecto le projet. 
+**Phase 3.** Refactorisation : j'ai extrait une interface `ICommand` commune à toutes les commandes, et découpé les méthodes de `Repository` correspondant aux commandes du cahier des charges en classes dédiées, nommées `Command<NomDeLaCommande>` (par exemple `CommandAdd`, `CommandCommit`, `CommandRm`). J'ai renommé l'ancienne classe `RepositoryState` en `Repository`, un nom plus fidèle à son rôle, puis adapté les tests unitaires et d'intégration en conséquence.
 
 
 

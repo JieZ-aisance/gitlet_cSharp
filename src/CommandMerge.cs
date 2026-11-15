@@ -8,25 +8,13 @@ namespace Gitlet.Commands;
 
 public class CommandMerge : ICommand
 {
-    // private readonly string _workingDirectory;
-    // private readonly GitletPaths _paths;
-    // private readonly ObjectStore _objects;
-    // private readonly Repository _state;
-    //
-    // public GitletMergeScope(string workingDirectory)
-    // {
-    //     _workingDirectory = workingDirectory;
-    //     _paths = new GitletPaths(workingDirectory);
-    //     _objects = new ObjectStore(_paths);
-    //     _state = new Repository(_paths, _objects, workingDirectory);
-    // }
+    
     public int ExpectedArgs => 2;
 
     public string Execute(GitletContexte contexte, string[] args)
     {
         var givenBranchName = args[1];
         
-        //当前分支
         var branchCurrHash = contexte.Repository.GetCommitHash();
         
         var branchCurr = contexte.Repository.ReadCommit();
@@ -35,12 +23,7 @@ public class CommandMerge : ICommand
         
         var branchCurrFilesNames = branchCurrFiles.Keys;
         
-
-        //给定分支
-        //拼路径
         var branchGivenPath = contexte.Paths.BranchFile(givenBranchName);
-             
-        //如果给定分支不存在，会报错
     
         if (!contexte.Objects.Exists("branch", branchGivenPath))
         {
@@ -51,19 +34,16 @@ public class CommandMerge : ICommand
         var branchGivenHash = File.ReadAllText(branchGivenPath).Trim();
    
         var branchGiven = contexte.Repository.ReadCommit(branchGivenHash);
-        var branchGivenFiles = branchGiven.Files;
-        var branchGivenFilesNames = branchGivenFiles.Keys;
-      
         
-        //exceptions
-        //public const string CannotMergeWithItself = "Cannot merge a branch with itself.";
-        //比较分支名，而不是比较哈希。因为不同的分支，完全可以指向同一个commit
+        var branchGivenFiles = branchGiven.Files;
+        
+        var branchGivenFilesNames = branchGivenFiles.Keys;
+        
         if (contexte.Repository.CurrentBranch() == givenBranchName)
         {
             throw new GitletException(ExceptionMessages.CannotMergeWithItself);
         }
         
-        //staging area not empty暂存区有文件
         if (contexte.Repository.ReadStaging().Additions.Count != 0 || contexte.Repository.ReadStaging().Removals.Count != 0)
         {
 
@@ -71,7 +51,6 @@ public class CommandMerge : ICommand
         }
 
         
-        //split point
         var splitPoint = contexte.Repository.FindSplitPointBfs(branchCurrHash, branchGivenHash);
         
         var splitPointCommit = contexte.Repository.ReadCommit(splitPoint);
@@ -80,41 +59,36 @@ public class CommandMerge : ICommand
         
         var splitPointFilesNames = splitPointFiles.Keys;
         
-        // var splitPointFilesContents = splitPointFiles.Values;
-        
-        //几种exception
-       
-        //public const string GivenIsAncestor = "Given branch is an ancestor of the current branch.";
-        //给定分支是现在分支的祖先
         if (branchGivenHash == splitPoint)
         {
             throw new GitletException(ExceptionMessages.GivenIsAncestor);
         }
         
-     
-        // 当前分支是给定分支的祖先:快进，执行reset
+
         if (branchCurrHash == splitPoint)
         {
             
             new CommandReset().Execute(contexte, ["reset", branchGivenHash]);
+            
             throw new GitletException(ExceptionMessages.FastForwarded);
+            
         }
-        
-        
-        //未跟踪文件挡路
 
         foreach (var name in branchGivenFilesNames)
         {
             var path = Path.Combine(contexte.WorkingDirectory, name);
+            
             if (File.Exists(path) && !branchCurrFiles.ContainsKey(name))
             {
+                
                 throw new GitletException(ExceptionMessages.UntrackedFileInTheWay);
+                
             }
         }
         
-        //merge 容器
       
         var files = new SortedDictionary<string, string>(branchCurr.Files);
+        
         var hasConflits = false;
         
         //在split点存在的文件

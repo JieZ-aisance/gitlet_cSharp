@@ -9,9 +9,10 @@ public sealed class CommandCheckoutFile :ICommand
     public string Execute(GitletContexte contexte, string[] args)
     {
         var fileName = args[2];
+        
         var commitCurr = contexte.Repository.ReadCommit();
         
-        if (!commitCurr.Files.TryGetValue(fileName, out string blobHash))//参见add,如果存在就返回他的hash，不存在就抛异常
+        if (!commitCurr.Files.TryGetValue(fileName, out string blobHash))
         {
             throw new GitletException(ExceptionMessages.FileDoesNotExist);
         }
@@ -21,5 +22,6 @@ public sealed class CommandCheckoutFile :ICommand
         File.WriteAllBytes(Path.Combine(contexte.WorkingDirectory, fileName), content);
 
         return $"{fileName} has been restored to its version in HEAD.";
+        
     }
 }

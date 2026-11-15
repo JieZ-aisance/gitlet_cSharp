@@ -9,16 +9,14 @@ public sealed class CommandLog:ICommand
     
     public string Execute(GitletContexte contexte, string[] args)
     {
-        var infomationToPrint = new StringBuilder();//optimisation var infomationToPrint = "";
-       
+        var infomationToPrint = new StringBuilder();
+        
         var CurrentCommit = contexte.Repository.ReadCommit();
        
         var CurrentHash = contexte.Repository.GetCommitHash();
        
         while (true)
         {
-            //info to print
-           
             var date = CurrentCommit.TimeStamp.ToLocalTime()
                 .ToString("ddd MMM d HH:mm:ss yyyy zzz", CultureInfo.InvariantCulture); 
            
@@ -35,17 +33,18 @@ public sealed class CommandLog:ICommand
             infomationToPrint.Append(message);
             infomationToPrint.Append("\n");
            
-
-           
             if (CurrentCommit.ParentHashes.Count == 0)
             {
                 break;
             }
            
             CurrentHash = CurrentCommit.ParentHashes[0];
+            
             CurrentCommit = contexte.Repository.ReadCommit(CurrentHash);
+            
         }
        
         return  infomationToPrint.ToString();
+        
     }
 }

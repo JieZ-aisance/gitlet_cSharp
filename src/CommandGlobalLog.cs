@@ -6,16 +6,21 @@ namespace Gitlet.Commands;
 public sealed class CommandGlobalLog : ICommand
 {
     public int ExpectedArgs => 1;
+    
     public string Execute(GitletContexte contexte, string[] args)
     {
         var infomationToPrint = new StringBuilder();
+        
         foreach (var commit in Directory.GetDirectories(contexte.Paths.CommitDir))
         {
+            
             var prefixe = Path.GetFileName(commit);
 
             foreach (var file in Directory.GetFiles(commit))
             {
+                
                 var hashtoprint = prefixe+Path.GetFileName(file);
+                
                 var CurrentCommit = contexte.Repository.ReadCommit(hashtoprint);
                 
                 var date = CurrentCommit.TimeStamp.ToLocalTime()
@@ -36,6 +41,8 @@ public sealed class CommandGlobalLog : ICommand
                 
             }
         }
+        
         return infomationToPrint.ToString();
+        
     }
 }
