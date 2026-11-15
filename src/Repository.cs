@@ -120,7 +120,7 @@ public sealed class Repository
         
         while (true)
         {
-            ancestors1.Add(current2);
+            ancestors2.Add(current2);
             var commitCurr = ReadCommit(current2);
             if (commitCurr.ParentHashes.Count == 0) break;
             current2 = commitCurr.ParentHashes[0];
