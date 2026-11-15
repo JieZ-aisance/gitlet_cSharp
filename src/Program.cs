@@ -51,7 +51,7 @@ public static class Program
                     break;
                 case "find":
                     RequireArgs(args, 2);
-                    new CommandFind().Execute(contexte, args);
+                    Console.Write(new CommandFind().Execute(contexte, args));
                     break;
                 case "branch":
                     RequireArgs(args, 2);
@@ -63,7 +63,7 @@ public static class Program
                     break;
                 case "status":
                     RequireArgs(args, 1);
-                    new CommandStatus().Execute(contexte, args);
+                    Console.Write(new CommandStatus().Execute(contexte, args));
                     break;
                 case "checkout":
                     if (args.Length == 3 && args[1] == "--")

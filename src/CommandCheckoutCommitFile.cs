@@ -8,7 +8,7 @@ public sealed class CommandCheckoutCommitFile
     
     public string Execute(GitletContexte contexte, string[] args)
     {
-        var commitId = args[2];
+        var commitId = args[1];
         var fileName = args[3];
         //根据hash找对应的commit
         var commitList = new List<string>();
