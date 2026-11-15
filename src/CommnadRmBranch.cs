@@ -14,7 +14,7 @@ public sealed class CommnadRmBranch:ICommand
 
         }
 
-        if (branchName == contexte.State.CurrentBranch())
+        if (branchName == contexte.Repository.CurrentBranch())
         {
             throw new GitletException(ExceptionMessages.DeleteCurrentBranchForbiden);
         }

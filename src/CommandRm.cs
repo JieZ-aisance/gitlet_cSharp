@@ -8,8 +8,8 @@ public class CommandRm:ICommand
     public string Execute(GitletContexte contexte, string[] args)
     {
         var filePath =  args[1];
-        var staging = contexte.State.ReadStaging();
-        var commitCurr = contexte.State.ReadCommit();
+        var staging = contexte.Repository.ReadStaging();
+        var commitCurr = contexte.Repository.ReadCommit();
         
         var isStaged = staging.Additions.ContainsKey(filePath);
         var isCommitted = commitCurr.Files.ContainsKey(filePath);

@@ -40,7 +40,7 @@ public class CommandLogTestsUnitaires : IDisposable
     public void Execute_FreshRepository_HasExactLayout()
     {
         // Arrange
-        var hash = _contexte.State.GetCommitHash();
+        var hash = _contexte.Repository.GetCommitHash();
 
         var date = DateTimeOffset.UnixEpoch.ToLocalTime()
             .ToString("ddd MMM d HH:mm:ss yyyy zzz", CultureInfo.InvariantCulture);
@@ -59,7 +59,7 @@ public class CommandLogTestsUnitaires : IDisposable
     public void Execute_HasOneEntryPerCommit_NewestFirst(int count)
     {
         // Arrange
-        var expectedHashes = new List<string> { _contexte.State.GetCommitHash() };
+        var expectedHashes = new List<string> { _contexte.Repository.GetCommitHash() };
 
         for (var i = 1; i <= count; i++)
         {
@@ -70,7 +70,7 @@ public class CommandLogTestsUnitaires : IDisposable
             new CommandCommit().Execute(_contexte, ["commit", $"message {i}"]);
 
             // 新的 commit 排在最前面
-            expectedHashes.Insert(0, _contexte.State.GetCommitHash());
+            expectedHashes.Insert(0, _contexte.Repository.GetCommitHash());
         }
 
         // Act

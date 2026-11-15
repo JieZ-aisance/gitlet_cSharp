@@ -66,7 +66,7 @@ public class CommandInitTestsUnitaires : IDisposable
         _init.Execute(_contexte, ["init"]);
 
         // Assert
-        var commit = _contexte.State.ReadCommit();
+        var commit = _contexte.Repository.ReadCommit();
 
         commit.Message.ShouldBe("initial commit");
 
@@ -88,7 +88,7 @@ public class CommandInitTestsUnitaires : IDisposable
 
         _contexte.Objects.Exists("commit", branchHash).ShouldBeTrue();
 
-        _contexte.State.CurrentBranch().ShouldBe("main");
+        _contexte.Repository.CurrentBranch().ShouldBe("main");
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class CommandInitTestsUnitaires : IDisposable
             _init.Execute(other, ["init"]);
 
             // Assert
-            other.State.GetCommitHash().ShouldBe(_contexte.State.GetCommitHash());
+            other.Repository.GetCommitHash().ShouldBe(_contexte.Repository.GetCommitHash());
         }
         finally
         {

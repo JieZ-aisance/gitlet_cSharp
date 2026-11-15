@@ -53,14 +53,14 @@ public class CommandCommitTestsUnitaires : IDisposable
     public void Execute_NothingStaged_Throws()
     {
         // Arrange
-        var before = _contexte.State.GetCommitHash();
+        var before = _contexte.Repository.GetCommitHash();
 
         // Act & Assert
         Should.Throw<GitletException>(() => _commit.Execute(_contexte, ["commit", "empty"]))
             .Message.ShouldBe(ExceptionMessages.NoChangesAdded);
 
         // 分支没有移动
-        _contexte.State.GetCommitHash().ShouldBe(before);
+        _contexte.Repository.GetCommitHash().ShouldBe(before);
     }
 
     [Fact]
@@ -82,19 +82,19 @@ public class CommandCommitTestsUnitaires : IDisposable
     public void Execute_CreatesCommitWithMessageParentAndStagedFiles()
     {
         // Arrange
-        var parentHash = _contexte.State.GetCommitHash();
+        var parentHash = _contexte.Repository.GetCommitHash();
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "x");
 
         new CommandAdd().Execute(_contexte, ["add", "a.txt"]);
 
-        var stagedHash = _contexte.State.ReadStaging().Additions["a.txt"];
+        var stagedHash = _contexte.Repository.ReadStaging().Additions["a.txt"];
 
         // Act
         _commit.Execute(_contexte, ["commit", "first"]);
 
         // Assert
-        var commit = _contexte.State.ReadCommit();
+        var commit = _contexte.Repository.ReadCommit();
 
         commit.Message.ShouldBe("first");
 
@@ -105,7 +105,7 @@ public class CommandCommitTestsUnitaires : IDisposable
         commit.Files["a.txt"].ShouldBe(stagedHash);
 
         // 当前分支指向新的 commit
-        _contexte.State.GetCommitHash().ShouldNotBe(parentHash);
+        _contexte.Repository.GetCommitHash().ShouldNotBe(parentHash);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class CommandCommitTestsUnitaires : IDisposable
         _commit.Execute(_contexte, ["commit", "first"]);
 
         // Assert
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Additions.ShouldBeEmpty();
 
@@ -137,7 +137,7 @@ public class CommandCommitTestsUnitaires : IDisposable
 
         _commit.Execute(_contexte, ["commit", "add a"]);
 
-        var hashOfA = _contexte.State.ReadCommit().Files["a.txt"];
+        var hashOfA = _contexte.Repository.ReadCommit().Files["a.txt"];
 
         File.WriteAllText(Path.Combine(_dir, "b.txt"), "b1");
 
@@ -147,7 +147,7 @@ public class CommandCommitTestsUnitaires : IDisposable
         _commit.Execute(_contexte, ["commit", "add b"]);
 
         // Assert
-        var commit = _contexte.State.ReadCommit();
+        var commit = _contexte.Repository.ReadCommit();
 
         commit.Files.Keys.ShouldBe(["a.txt", "b.txt"]);
 
@@ -164,9 +164,9 @@ public class CommandCommitTestsUnitaires : IDisposable
 
         _commit.Execute(_contexte, ["commit", "first"]);
 
-        var firstCommitHash = _contexte.State.GetCommitHash();
+        var firstCommitHash = _contexte.Repository.GetCommitHash();
 
-        var firstBlobHash = _contexte.State.ReadCommit().Files["a.txt"];
+        var firstBlobHash = _contexte.Repository.ReadCommit().Files["a.txt"];
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "v2");
 
@@ -176,10 +176,10 @@ public class CommandCommitTestsUnitaires : IDisposable
         _commit.Execute(_contexte, ["commit", "second"]);
 
         // Assert
-        _contexte.State.ReadCommit().Files["a.txt"].ShouldNotBe(firstBlobHash);
+        _contexte.Repository.ReadCommit().Files["a.txt"].ShouldNotBe(firstBlobHash);
 
         // 父 commit 里的版本不变
-        _contexte.State.ReadCommit(firstCommitHash).Files["a.txt"].ShouldBe(firstBlobHash);
+        _contexte.Repository.ReadCommit(firstCommitHash).Files["a.txt"].ShouldBe(firstBlobHash);
     }
 
     [Fact]
@@ -198,9 +198,9 @@ public class CommandCommitTestsUnitaires : IDisposable
         _commit.Execute(_contexte, ["commit", "remove a"]);
 
         // Assert
-        _contexte.State.ReadCommit().Files.ShouldBeEmpty();
+        _contexte.Repository.ReadCommit().Files.ShouldBeEmpty();
 
-        _contexte.State.ReadStaging().Removals.ShouldBeEmpty();
+        _contexte.Repository.ReadStaging().Removals.ShouldBeEmpty();
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class CommandCommitTestsUnitaires : IDisposable
         // Arrange
         new CommandBranch().Execute(_contexte, ["branch", "dev"]);
 
-        var before = _contexte.State.GetCommitHash();
+        var before = _contexte.Repository.GetCommitHash();
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "x");
 
@@ -231,7 +231,7 @@ public class CommandCommitTestsUnitaires : IDisposable
     public void Execute_SeveralCommits_ChainsEachOneToThePrevious(int count)
     {
         // Arrange
-        var expectedParent = _contexte.State.GetCommitHash();
+        var expectedParent = _contexte.Repository.GetCommitHash();
 
         for (var i = 1; i <= count; i++)
         {
@@ -243,13 +243,13 @@ public class CommandCommitTestsUnitaires : IDisposable
             _commit.Execute(_contexte, ["commit", $"message {i}"]);
 
             // Assert
-            var commit = _contexte.State.ReadCommit();
+            var commit = _contexte.Repository.ReadCommit();
 
             commit.Message.ShouldBe($"message {i}");
 
             commit.ParentHashes.ShouldBe([expectedParent]);
 
-            expectedParent = _contexte.State.GetCommitHash();
+            expectedParent = _contexte.Repository.GetCommitHash();
         }
     }
 }

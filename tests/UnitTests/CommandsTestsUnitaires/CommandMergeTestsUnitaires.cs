@@ -102,7 +102,7 @@ public class CommandMergeTestsUnitaires : IDisposable
             new CommandCommit().Execute(_contexte, ["commit", $"main {i}"]);
         }
 
-        var mainHash = _contexte.State.GetCommitHash();
+        var mainHash = _contexte.Repository.GetCommitHash();
 
         // Act
         var exception = Should.Throw<GitletException>(() => _merge.Execute(_contexte, ["merge", "dev"]));
@@ -110,7 +110,7 @@ public class CommandMergeTestsUnitaires : IDisposable
         // Assert
         exception.Message.ShouldBe(ExceptionMessages.GivenIsAncestor);
 
-        _contexte.State.GetCommitHash().ShouldBe(mainHash);
+        _contexte.Repository.GetCommitHash().ShouldBe(mainHash);
     }
 
     //当前分支是给定分支的祖先:快进
@@ -136,7 +136,7 @@ public class CommandMergeTestsUnitaires : IDisposable
             new CommandCommit().Execute(_contexte, ["commit", $"dev {i}"]);
         }
 
-        var devHash = _contexte.State.GetCommitHash();
+        var devHash = _contexte.Repository.GetCommitHash();
 
         new CommandCheckoutBranch().Execute(_contexte, ["checkout", "main"]);
 
@@ -147,8 +147,8 @@ public class CommandMergeTestsUnitaires : IDisposable
         exception.Message.ShouldBe(ExceptionMessages.FastForwarded);
 
         //main 指向 dev 的 commit
-        _contexte.State.CurrentBranch().ShouldBe("main");
-        _contexte.State.GetCommitHash().ShouldBe(devHash);
+        _contexte.Repository.CurrentBranch().ShouldBe("main");
+        _contexte.Repository.GetCommitHash().ShouldBe(devHash);
 
         //dev 的文件都被检出
         for (var i = 0; i < commitsAhead; i++)
@@ -183,7 +183,7 @@ public class CommandMergeTestsUnitaires : IDisposable
         new CommandAdd().Execute(_contexte, ["add", "main.txt"]);
         new CommandCommit().Execute(_contexte, ["commit", "main adds main"]);
 
-        var mainHash = _contexte.State.GetCommitHash();
+        var mainHash = _contexte.Repository.GetCommitHash();
 
         //工作区放一个未跟踪的同名文件
         File.WriteAllText(Path.Combine(_dir, "new.txt"), untrackedContent);
@@ -196,7 +196,7 @@ public class CommandMergeTestsUnitaires : IDisposable
 
         //文件没被覆盖,也没产生 merge commit
         File.ReadAllText(Path.Combine(_dir, "new.txt")).ShouldBe(untrackedContent);
-        _contexte.State.GetCommitHash().ShouldBe(mainHash);
+        _contexte.Repository.GetCommitHash().ShouldBe(mainHash);
     }
 
     //文件在 split、当前、给定三处都存在
@@ -239,7 +239,7 @@ public class CommandMergeTestsUnitaires : IDisposable
         File.ReadAllText(Path.Combine(_dir, "f.txt")).ShouldBe(expected);
 
         //merge commit 里记录的也是这个版本
-        var blobHash = _contexte.State.ReadCommit().Files["f.txt"];
+        var blobHash = _contexte.Repository.ReadCommit().Files["f.txt"];
         Encoding.UTF8.GetString(_contexte.Objects.Read("blob", blobHash)).ShouldBe(expected);
     }
 
@@ -283,7 +283,7 @@ public class CommandMergeTestsUnitaires : IDisposable
         // Assert
         File.Exists(Path.Combine(_dir, "f.txt")).ShouldBeFalse();
 
-        _contexte.State.ReadCommit().Files.ContainsKey("f.txt").ShouldBeFalse();
+        _contexte.Repository.ReadCommit().Files.ContainsKey("f.txt").ShouldBeFalse();
     }
 
     //文件在 split 不存在,之后才新增(null 表示这一边没有这个文件)
@@ -328,7 +328,7 @@ public class CommandMergeTestsUnitaires : IDisposable
         // Assert
         File.ReadAllText(Path.Combine(_dir, "f.txt")).ShouldBe(expected);
 
-        var blobHash = _contexte.State.ReadCommit().Files["f.txt"];
+        var blobHash = _contexte.Repository.ReadCommit().Files["f.txt"];
         Encoding.UTF8.GetString(_contexte.Objects.Read("blob", blobHash)).ShouldBe(expected);
     }
 
@@ -357,7 +357,7 @@ public class CommandMergeTestsUnitaires : IDisposable
         new CommandAdd().Execute(_contexte, ["add", "f.txt"]);
         new CommandCommit().Execute(_contexte, ["commit", "dev commit"]);
 
-        var devHash = _contexte.State.GetCommitHash();
+        var devHash = _contexte.Repository.GetCommitHash();
 
         //main
         new CommandCheckoutBranch().Execute(_contexte, ["checkout", "main"]);
@@ -374,7 +374,7 @@ public class CommandMergeTestsUnitaires : IDisposable
         }
         new CommandCommit().Execute(_contexte, ["commit", "main commit"]);
 
-        var mainHash = _contexte.State.GetCommitHash();
+        var mainHash = _contexte.Repository.GetCommitHash();
 
         // Act
         var exception = Should.Throw<GitletException>(() => _merge.Execute(_contexte, ["merge", "dev"]));
@@ -386,7 +386,7 @@ public class CommandMergeTestsUnitaires : IDisposable
         File.ReadAllText(Path.Combine(_dir, "f.txt")).ShouldBe(expected);
 
         //冲突时仍然生成 merge commit,里面记录的是冲突内容
-        var mergeCommit = _contexte.State.ReadCommit();
+        var mergeCommit = _contexte.Repository.ReadCommit();
         mergeCommit.ParentHashes.ShouldBe([mainHash, devHash]);
 
         var blobHash = mergeCommit.Files["f.txt"];
@@ -413,7 +413,7 @@ public class CommandMergeTestsUnitaires : IDisposable
         new CommandAdd().Execute(_contexte, ["add", "given.txt"]);
         new CommandCommit().Execute(_contexte, ["commit", "given commit"]);
 
-        var givenHash = _contexte.State.GetCommitHash();
+        var givenHash = _contexte.Repository.GetCommitHash();
 
         //main
         new CommandCheckoutBranch().Execute(_contexte, ["checkout", "main"]);
@@ -421,7 +421,7 @@ public class CommandMergeTestsUnitaires : IDisposable
         new CommandAdd().Execute(_contexte, ["add", "main.txt"]);
         new CommandCommit().Execute(_contexte, ["commit", "main commit"]);
 
-        var mainHash = _contexte.State.GetCommitHash();
+        var mainHash = _contexte.Repository.GetCommitHash();
 
         // Act
         var result = _merge.Execute(_contexte, ["merge", givenBranch]);
@@ -429,7 +429,7 @@ public class CommandMergeTestsUnitaires : IDisposable
         // Assert
         result.ShouldBe($"{givenBranch} merged into main successfully.");
 
-        var mergeCommit = _contexte.State.ReadCommit();
+        var mergeCommit = _contexte.Repository.ReadCommit();
 
         mergeCommit.Message.ShouldBe($"Merged {givenBranch} into main.");
         mergeCommit.ParentHashes.ShouldBe([mainHash, givenHash]);
@@ -439,7 +439,7 @@ public class CommandMergeTestsUnitaires : IDisposable
         File.ReadAllText(Path.Combine(_dir, "given.txt")).ShouldBe("given");
 
         //当前分支还是 main,给定分支没动
-        _contexte.State.CurrentBranch().ShouldBe("main");
+        _contexte.Repository.CurrentBranch().ShouldBe("main");
         File.ReadAllText(_contexte.Paths.BranchFile(givenBranch)).ShouldBe(givenHash);
     }
 

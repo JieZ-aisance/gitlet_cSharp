@@ -137,7 +137,7 @@ public class CommandCheckoutFileTestsUnitaires : IDisposable
         _checkoutFile.Execute(_contexte, ["checkout", "--", "a.txt"]);
 
         // Assert
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Additions.Keys.ShouldBe(["b.txt"]);
 

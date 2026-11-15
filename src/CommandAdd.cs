@@ -22,8 +22,8 @@ public sealed class CommandAdd : ICommand
         // 文件内容存成 blob,得到哈希
         var newHash = contexte.Objects.Write("blob", File.ReadAllBytes(fullPath));
 
-        var commitCurrFiles = contexte.State.ReadCommit().Files;
-        var staging = contexte.State.ReadStaging();
+        var commitCurrFiles = contexte.Repository.ReadCommit().Files;
+        var staging = contexte.Repository.ReadStaging();
 
         // 避免同一个文件同时出现在添加和删除里
         staging.Removals.Remove(fileName);

@@ -3,14 +3,14 @@ using System.Text;
 
 namespace Gitlet;
 
-public sealed class RepositoryState
+public sealed class Repository
 {
     
     private readonly string _workingDirectory;
     private readonly GitletPaths _paths;
     private readonly ObjectStore _objects;
     
-    public RepositoryState(GitletPaths paths, ObjectStore objects, string workingDirectory)
+    public Repository(GitletPaths paths, ObjectStore objects, string workingDirectory)
     {
         _paths = paths;
         _objects = objects;

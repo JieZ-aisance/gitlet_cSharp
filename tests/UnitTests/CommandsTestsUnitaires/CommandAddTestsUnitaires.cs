@@ -72,7 +72,7 @@ public class CommandAddTestsUnitaires : IDisposable
         // Assert
         _contexte.Objects.Exists("blob", expectedBlobHash).ShouldBeTrue();
 
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Additions.Count.ShouldBe(1);
 
@@ -89,7 +89,7 @@ public class CommandAddTestsUnitaires : IDisposable
 
         _add.Execute(_contexte, ["add", "a.txt"]);
 
-        var firstHash = _contexte.State.ReadStaging().Additions["a.txt"];
+        var firstHash = _contexte.Repository.ReadStaging().Additions["a.txt"];
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "v2");
 
@@ -97,7 +97,7 @@ public class CommandAddTestsUnitaires : IDisposable
         _add.Execute(_contexte, ["add", "a.txt"]);
 
         // Assert
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Additions.Count.ShouldBe(1);
 
@@ -118,7 +118,7 @@ public class CommandAddTestsUnitaires : IDisposable
         _add.Execute(_contexte, ["add", "a.txt"]);
 
         // Assert
-        _contexte.State.ReadStaging().Additions.Keys.ShouldBe(["a.txt", "b.txt"]);
+        _contexte.Repository.ReadStaging().Additions.Keys.ShouldBe(["a.txt", "b.txt"]);
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class CommandAddTestsUnitaires : IDisposable
         _add.Execute(_contexte, ["add", "a.txt"]);
 
         // Assert
-        _contexte.State.ReadStaging().Additions.ShouldBeEmpty();
+        _contexte.Repository.ReadStaging().Additions.ShouldBeEmpty();
     }
 
     [Fact]
@@ -148,7 +148,7 @@ public class CommandAddTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "first"]);
 
-        var committedHash = _contexte.State.ReadCommit().Files["a.txt"];
+        var committedHash = _contexte.Repository.ReadCommit().Files["a.txt"];
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "v2");
 
@@ -156,7 +156,7 @@ public class CommandAddTestsUnitaires : IDisposable
         _add.Execute(_contexte, ["add", "a.txt"]);
 
         // Assert
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Additions.ContainsKey("a.txt").ShouldBeTrue();
 
@@ -184,7 +184,7 @@ public class CommandAddTestsUnitaires : IDisposable
         _add.Execute(_contexte, ["add", "a.txt"]);
 
         // Assert
-        _contexte.State.ReadStaging().Additions.ShouldBeEmpty();
+        _contexte.Repository.ReadStaging().Additions.ShouldBeEmpty();
     }
 
     [Theory]
@@ -207,7 +207,7 @@ public class CommandAddTestsUnitaires : IDisposable
         _add.Execute(_contexte, ["add", "a.txt"]);
 
         // Assert
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Removals.ShouldBeEmpty();
 
@@ -236,7 +236,7 @@ public class CommandAddTestsUnitaires : IDisposable
         _add.Execute(_contexte, ["add", "b.txt"]);
 
         // Assert
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Removals.ShouldBe(["old.txt"]);
 

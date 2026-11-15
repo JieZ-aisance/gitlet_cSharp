@@ -10,7 +10,7 @@ public sealed class CommandStatus:ICommand
         var infomationToPrint = new StringBuilder();
         infomationToPrint.Append("=== Branches ===\n");
 
-        var current = contexte.State.CurrentBranch();
+        var current = contexte.Repository.CurrentBranch();
         var branches = Directory.GetFiles(contexte.Paths.RefHeadDirec)
             .Select(Path.GetFileName)
             .OrderBy(name => name, StringComparer.Ordinal);//按名字排序
@@ -37,7 +37,7 @@ public sealed class CommandStatus:ICommand
         infomationToPrint.Append("\n");
         
         //staging
-        var staging = contexte.State.ReadStaging();
+        var staging = contexte.Repository.ReadStaging();
 
         infomationToPrint.Append("=== Staged Files ===\n");
         foreach (var name in staging.Additions.Keys)

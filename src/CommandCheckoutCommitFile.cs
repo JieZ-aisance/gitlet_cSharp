@@ -28,7 +28,7 @@ public sealed class CommandCheckoutCommitFile
         {
             if (commitHash.StartsWith(commitId))//commitId is a part of the commitHash
             {
-                var commit = contexte.State.ReadCommit(commitHash);
+                var commit = contexte.Repository.ReadCommit(commitHash);
                 // public SortedDictionary<string, string> Files { get; init; }
                 var Filelist = commit.Files;
 

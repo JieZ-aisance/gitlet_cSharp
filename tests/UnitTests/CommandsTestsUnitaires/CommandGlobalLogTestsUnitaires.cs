@@ -40,7 +40,7 @@ public class CommandGlobalLogTestsUnitaires : IDisposable
     public void Execute_FreshRepository_HasExactLayout()
     {
         // Arrange
-        var hash = _contexte.State.GetCommitHash();
+        var hash = _contexte.Repository.GetCommitHash();
 
         var date = DateTimeOffset.UnixEpoch.ToLocalTime()
             .ToString("ddd MMM d HH:mm:ss yyyy zzz", CultureInfo.InvariantCulture);
@@ -59,7 +59,7 @@ public class CommandGlobalLogTestsUnitaires : IDisposable
     public void Execute_HasOneEntryPerCommit(int extraCommits)
     {
         // Arrange
-        var expectedHashes = new List<string> { _contexte.State.GetCommitHash() };
+        var expectedHashes = new List<string> { _contexte.Repository.GetCommitHash() };
 
         for (var i = 0; i < extraCommits; i++)
         {
@@ -69,7 +69,7 @@ public class CommandGlobalLogTestsUnitaires : IDisposable
 
             new CommandCommit().Execute(_contexte, ["commit", $"c{i}"]);
 
-            expectedHashes.Add(_contexte.State.GetCommitHash());
+            expectedHashes.Add(_contexte.Repository.GetCommitHash());
         }
 
         // Act
@@ -111,7 +111,7 @@ public class CommandGlobalLogTestsUnitaires : IDisposable
     public void Execute_IncludesCommitsNoLongerReachableFromAnyBranch()
     {
         // Arrange
-        var initialHash = _contexte.State.GetCommitHash();
+        var initialHash = _contexte.Repository.GetCommitHash();
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "x");
 

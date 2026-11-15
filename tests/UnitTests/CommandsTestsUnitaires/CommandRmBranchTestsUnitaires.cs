@@ -49,7 +49,7 @@ public class CommandRmBranchTestsUnitaires : IDisposable
         // 当前分支不受影响
         File.Exists(_contexte.Paths.BranchFile("main")).ShouldBeTrue();
 
-        _contexte.State.CurrentBranch().ShouldBe("main");
+        _contexte.Repository.CurrentBranch().ShouldBe("main");
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class CommandRmBranchTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "only on dev"]);
 
-        var devHash = _contexte.State.GetCommitHash();
+        var devHash = _contexte.Repository.GetCommitHash();
 
         new CommandCheckoutBranch().Execute(_contexte, ["checkout", "main"]);
 
@@ -76,7 +76,7 @@ public class CommandRmBranchTestsUnitaires : IDisposable
         // Assert
         _contexte.Objects.Exists("commit", devHash).ShouldBeTrue();
 
-        _contexte.State.ReadCommit(devHash).Message.ShouldBe("only on dev");
+        _contexte.Repository.ReadCommit(devHash).Message.ShouldBe("only on dev");
     }
 
     [Fact]

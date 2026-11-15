@@ -80,7 +80,7 @@ public class CommandRmTestsUnitaires : IDisposable
         _rm.Execute(_contexte, ["rm", "a.txt"]);
 
         // Assert
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Additions.ShouldBeEmpty();
 
@@ -103,7 +103,7 @@ public class CommandRmTestsUnitaires : IDisposable
         _rm.Execute(_contexte, ["rm", "a.txt"]);
 
         // Assert
-        _contexte.State.ReadStaging().Removals.ShouldBe(["a.txt"]);
+        _contexte.Repository.ReadStaging().Removals.ShouldBe(["a.txt"]);
 
         File.Exists(Path.Combine(_dir, "a.txt")).ShouldBeFalse();
     }
@@ -124,7 +124,7 @@ public class CommandRmTestsUnitaires : IDisposable
         _rm.Execute(_contexte, ["rm", "a.txt"]);
 
         // Assert
-        _contexte.State.ReadStaging().Removals.ShouldBe(["a.txt"]);
+        _contexte.Repository.ReadStaging().Removals.ShouldBe(["a.txt"]);
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class CommandRmTestsUnitaires : IDisposable
         _rm.Execute(_contexte, ["rm", "a.txt"]);
 
         // Assert
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Additions.ShouldBeEmpty();
 
@@ -176,7 +176,7 @@ public class CommandRmTestsUnitaires : IDisposable
         _rm.Execute(_contexte, ["rm", "a.txt"]);
 
         // Assert
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Removals.ShouldBe(["a.txt"]);
 

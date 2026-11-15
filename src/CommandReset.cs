@@ -29,9 +29,9 @@ public sealed class CommandReset : ICommand
             if (commitHash.StartsWith(commitId)) //commitId is a part of the commitHash
             {
                 //
-                var CurrentCommit = contexte.State.ReadCommit();
+                var CurrentCommit = contexte.Repository.ReadCommit();
                 
-                var target = contexte.State.ReadCommit(commitHash);
+                var target = contexte.Repository.ReadCommit(commitHash);
                 
                 var files = target.Files;
                 
@@ -69,10 +69,10 @@ public sealed class CommandReset : ICommand
                 }
 
                 //同时把当前分支的头移动到那个提交节点。
-                File.WriteAllText(contexte.Paths.BranchFile(contexte.State.CurrentBranch()), commitHash);
+                File.WriteAllText(contexte.Paths.BranchFile(contexte.Repository.CurrentBranch()), commitHash);
                 
                 //清空暂存区
-                var staging = contexte.State.ReadStaging();
+                var staging = contexte.Repository.ReadStaging();
                 staging.Additions.Clear();
                 staging.Removals.Clear();
                 File.WriteAllText(contexte.Paths.StagingFile, JsonSerializer.Serialize(staging));

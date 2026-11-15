@@ -16,7 +16,7 @@ public sealed class CommandGlobalLog : ICommand
             foreach (var file in Directory.GetFiles(commit))
             {
                 var hashtoprint = prefixe+Path.GetFileName(file);
-                var CurrentCommit = contexte.State.ReadCommit(hashtoprint);
+                var CurrentCommit = contexte.Repository.ReadCommit(hashtoprint);
                 
                 var date = CurrentCommit.TimeStamp.ToLocalTime()
                     .ToString("ddd MMM d HH:mm:ss yyyy zzz", CultureInfo.InvariantCulture); 

@@ -38,7 +38,7 @@ public class CommandFindTestsUnitaires : IDisposable
     public void Execute_InitialCommitMessage_ReturnsInitialCommitHash()
     {
         // Arrange
-        var expected = _contexte.State.GetCommitHash();
+        var expected = _contexte.Repository.GetCommitHash();
 
         // Act
         var result = _find.Execute(_contexte, ["find", "initial commit"]);
@@ -57,7 +57,7 @@ public class CommandFindTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "target"]);
 
-        var expected = _contexte.State.GetCommitHash();
+        var expected = _contexte.Repository.GetCommitHash();
 
         // 再提交一个别的,保证不是"返回最新的 commit"
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "2");
@@ -89,7 +89,7 @@ public class CommandFindTestsUnitaires : IDisposable
 
             new CommandCommit().Execute(_contexte, ["commit", "same"]);
 
-            expectedHashes.Add(_contexte.State.GetCommitHash());
+            expectedHashes.Add(_contexte.Repository.GetCommitHash());
         }
 
         // Act
@@ -115,7 +115,7 @@ public class CommandFindTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "only on dev"]);
 
-        var expected = _contexte.State.GetCommitHash();
+        var expected = _contexte.Repository.GetCommitHash();
 
         new CommandCheckoutBranch().Execute(_contexte, ["checkout", "main"]);
 

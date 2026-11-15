@@ -53,7 +53,7 @@ public class CommandBranchTestsUnitaires : IDisposable
         // Assert
         File.Exists(_contexte.Paths.BranchFile("dev")).ShouldBeTrue();
 
-        _contexte.State.CurrentBranch().ShouldBe("main");
+        _contexte.Repository.CurrentBranch().ShouldBe("main");
     }
 
     [Theory]
@@ -76,7 +76,7 @@ public class CommandBranchTestsUnitaires : IDisposable
         _branch.Execute(_contexte, ["branch", "dev"]);
 
         // Assert
-        File.ReadAllText(_contexte.Paths.BranchFile("dev")).ShouldBe(_contexte.State.GetCommitHash());
+        File.ReadAllText(_contexte.Paths.BranchFile("dev")).ShouldBe(_contexte.Repository.GetCommitHash());
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class CommandBranchTestsUnitaires : IDisposable
         // Arrange
         _branch.Execute(_contexte, ["branch", "dev"]);
 
-        var hashAtCreation = _contexte.State.GetCommitHash();
+        var hashAtCreation = _contexte.Repository.GetCommitHash();
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "x");
 

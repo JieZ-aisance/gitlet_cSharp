@@ -38,7 +38,7 @@ public class CommandResetTestsUnitaires : IDisposable
     public void Execute_ReturnsEmptyString()
     {
         // Arrange
-        var initialId = _contexte.State.GetCommitHash();
+        var initialId = _contexte.Repository.GetCommitHash();
 
         // Act
         var result = _reset.Execute(_contexte, ["reset", initialId]);
@@ -59,7 +59,7 @@ public class CommandResetTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "first"]);
 
-        var firstHash = _contexte.State.GetCommitHash();
+        var firstHash = _contexte.Repository.GetCommitHash();
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "v2");
 
@@ -84,14 +84,14 @@ public class CommandResetTestsUnitaires : IDisposable
         // 分支文件里写的是完整哈希
         File.ReadAllText(_contexte.Paths.BranchFile("main")).ShouldBe(firstHash);
 
-        _contexte.State.ReadCommit().Message.ShouldBe("first");
+        _contexte.Repository.ReadCommit().Message.ShouldBe("first");
     }
 
     [Fact]
     public void Execute_ForwardToALaterCommit_RestoresItsFiles()
     {
         // Arrange
-        var initialHash = _contexte.State.GetCommitHash();
+        var initialHash = _contexte.Repository.GetCommitHash();
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "v1");
 
@@ -99,7 +99,7 @@ public class CommandResetTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "first"]);
 
-        var firstHash = _contexte.State.GetCommitHash();
+        var firstHash = _contexte.Repository.GetCommitHash();
 
         _reset.Execute(_contexte, ["reset", initialHash]);
 
@@ -111,14 +111,14 @@ public class CommandResetTestsUnitaires : IDisposable
         // Assert
         File.ReadAllText(Path.Combine(_dir, "a.txt")).ShouldBe("v1");
 
-        _contexte.State.GetCommitHash().ShouldBe(firstHash);
+        _contexte.Repository.GetCommitHash().ShouldBe(firstHash);
     }
 
     [Fact]
     public void Execute_MovesOnlyTheCurrentBranch()
     {
         // Arrange
-        var initialHash = _contexte.State.GetCommitHash();
+        var initialHash = _contexte.Repository.GetCommitHash();
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "v1");
 
@@ -126,7 +126,7 @@ public class CommandResetTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "first"]);
 
-        var firstHash = _contexte.State.GetCommitHash();
+        var firstHash = _contexte.Repository.GetCommitHash();
 
         new CommandBranch().Execute(_contexte, ["branch", "dev"]);
 
@@ -134,7 +134,7 @@ public class CommandResetTestsUnitaires : IDisposable
         _reset.Execute(_contexte, ["reset", initialHash]);
 
         // Assert
-        _contexte.State.CurrentBranch().ShouldBe("main");
+        _contexte.Repository.CurrentBranch().ShouldBe("main");
 
         File.ReadAllText(_contexte.Paths.BranchFile("main")).ShouldBe(initialHash);
 
@@ -155,7 +155,7 @@ public class CommandResetTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "first"]);
 
-        var firstHash = _contexte.State.GetCommitHash();
+        var firstHash = _contexte.Repository.GetCommitHash();
 
         // 暂存一个添加和一个删除
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "v2");
@@ -168,7 +168,7 @@ public class CommandResetTestsUnitaires : IDisposable
         _reset.Execute(_contexte, ["reset", firstHash]);
 
         // Assert
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Additions.ShouldBeEmpty();
 
@@ -189,7 +189,7 @@ public class CommandResetTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "first"]);
 
-        var firstHash = _contexte.State.GetCommitHash();
+        var firstHash = _contexte.Repository.GetCommitHash();
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "v2");
 
@@ -197,7 +197,7 @@ public class CommandResetTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "second"]);
 
-        var secondHash = _contexte.State.GetCommitHash();
+        var secondHash = _contexte.Repository.GetCommitHash();
 
         // Act
         _reset.Execute(_contexte, ["reset", firstHash]);
@@ -205,7 +205,7 @@ public class CommandResetTestsUnitaires : IDisposable
         // Assert
         _contexte.Objects.Exists("commit", secondHash).ShouldBeTrue();
 
-        _contexte.State.ReadCommit(secondHash).Message.ShouldBe("second");
+        _contexte.Repository.ReadCommit(secondHash).Message.ShouldBe("second");
     }
 
     [Theory]
@@ -214,7 +214,7 @@ public class CommandResetTestsUnitaires : IDisposable
     public void Execute_UnknownCommit_Throws(string commitId)
     {
         // Arrange
-        var before = _contexte.State.GetCommitHash();
+        var before = _contexte.Repository.GetCommitHash();
 
         // 保证这个前缀真的不匹配任何 commit
         before.ShouldNotStartWith(commitId);
@@ -223,7 +223,7 @@ public class CommandResetTestsUnitaires : IDisposable
         Should.Throw<GitletException>(() => _reset.Execute(_contexte, ["reset", commitId]))
             .Message.ShouldBe(ExceptionMessages.CommitDoesNotExist);
 
-        _contexte.State.GetCommitHash().ShouldBe(before);
+        _contexte.Repository.GetCommitHash().ShouldBe(before);
     }
 
     [Fact]
@@ -236,13 +236,13 @@ public class CommandResetTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "first"]);
 
-        var firstHash = _contexte.State.GetCommitHash();
+        var firstHash = _contexte.Repository.GetCommitHash();
 
         new CommandRm().Execute(_contexte, ["rm", "a.txt"]);
 
         new CommandCommit().Execute(_contexte, ["commit", "remove a"]);
 
-        var headBefore = _contexte.State.GetCommitHash();
+        var headBefore = _contexte.Repository.GetCommitHash();
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "untracked now");
 
@@ -253,6 +253,6 @@ public class CommandResetTestsUnitaires : IDisposable
         // 文件没被覆盖,分支也没移动
         File.ReadAllText(Path.Combine(_dir, "a.txt")).ShouldBe("untracked now");
 
-        _contexte.State.GetCommitHash().ShouldBe(headBefore);
+        _contexte.Repository.GetCommitHash().ShouldBe(headBefore);
     }
 }

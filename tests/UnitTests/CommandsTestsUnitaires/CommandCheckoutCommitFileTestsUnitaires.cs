@@ -44,7 +44,7 @@ public class CommandCheckoutCommitFileTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "first"]);
 
-        var firstId = _contexte.State.GetCommitHash();
+        var firstId = _contexte.Repository.GetCommitHash();
 
         // Act
         var result = _checkoutCommitFile.Execute(_contexte, ["checkout", firstId, "--", "a.txt"]);
@@ -65,7 +65,7 @@ public class CommandCheckoutCommitFileTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "first"]);
 
-        var firstId = _contexte.State.GetCommitHash()[..idLength];
+        var firstId = _contexte.Repository.GetCommitHash()[..idLength];
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "v2");
 
@@ -90,7 +90,7 @@ public class CommandCheckoutCommitFileTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "first"]);
 
-        var firstId = _contexte.State.GetCommitHash();
+        var firstId = _contexte.Repository.GetCommitHash();
 
         // 在后面的 commit 里把文件删掉
         new CommandRm().Execute(_contexte, ["rm", "a.txt"]);
@@ -114,7 +114,7 @@ public class CommandCheckoutCommitFileTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "first"]);
 
-        var firstId = _contexte.State.GetCommitHash();
+        var firstId = _contexte.Repository.GetCommitHash();
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "v2");
 
@@ -122,15 +122,15 @@ public class CommandCheckoutCommitFileTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "second"]);
 
-        var headBefore = _contexte.State.GetCommitHash();
+        var headBefore = _contexte.Repository.GetCommitHash();
 
         // Act
         _checkoutCommitFile.Execute(_contexte, ["checkout", firstId, "--", "a.txt"]);
 
         // Assert
-        _contexte.State.GetCommitHash().ShouldBe(headBefore);
+        _contexte.Repository.GetCommitHash().ShouldBe(headBefore);
 
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Additions.ShouldBeEmpty();
 
@@ -151,7 +151,7 @@ public class CommandCheckoutCommitFileTestsUnitaires : IDisposable
 
         new CommandCommit().Execute(_contexte, ["commit", "on dev"]);
 
-        var devId = _contexte.State.GetCommitHash();
+        var devId = _contexte.Repository.GetCommitHash();
 
         new CommandCheckoutBranch().Execute(_contexte, ["checkout", "main"]);
 
@@ -161,7 +161,7 @@ public class CommandCheckoutCommitFileTestsUnitaires : IDisposable
         // Assert
         File.ReadAllText(Path.Combine(_dir, "a.txt")).ShouldBe("dev version");
 
-        _contexte.State.CurrentBranch().ShouldBe("main");
+        _contexte.Repository.CurrentBranch().ShouldBe("main");
     }
 
     [Theory]
@@ -177,9 +177,9 @@ public class CommandCheckoutCommitFileTestsUnitaires : IDisposable
         new CommandCommit().Execute(_contexte, ["commit", "first"]);
 
         // 保证这个前缀真的不匹配任何 commit
-        _contexte.State.GetCommitHash().ShouldNotStartWith(commitId);
+        _contexte.Repository.GetCommitHash().ShouldNotStartWith(commitId);
 
-        _contexte.State.ReadCommit().ParentHashes[0].ShouldNotStartWith(commitId);
+        _contexte.Repository.ReadCommit().ParentHashes[0].ShouldNotStartWith(commitId);
 
         // Act & Assert
         Should.Throw<GitletException>(() => _checkoutCommitFile.Execute(_contexte, ["checkout", commitId, "--", "a.txt"]))
@@ -190,7 +190,7 @@ public class CommandCheckoutCommitFileTestsUnitaires : IDisposable
     public void Execute_FileNotInThatCommit_Throws()
     {
         // Arrange
-        var initialId = _contexte.State.GetCommitHash();
+        var initialId = _contexte.Repository.GetCommitHash();
 
         File.WriteAllText(Path.Combine(_dir, "a.txt"), "v1");
 

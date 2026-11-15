@@ -11,9 +11,9 @@ public sealed class CommandLog:ICommand
     {
         var infomationToPrint = new StringBuilder();//optimisation var infomationToPrint = "";
        
-        var CurrentCommit = contexte.State.ReadCommit();
+        var CurrentCommit = contexte.Repository.ReadCommit();
        
-        var CurrentHash = contexte.State.GetCommitHash();
+        var CurrentHash = contexte.Repository.GetCommitHash();
        
         while (true)
         {
@@ -43,7 +43,7 @@ public sealed class CommandLog:ICommand
             }
            
             CurrentHash = CurrentCommit.ParentHashes[0];
-            CurrentCommit = contexte.State.ReadCommit(CurrentHash);
+            CurrentCommit = contexte.Repository.ReadCommit(CurrentHash);
         }
        
         return  infomationToPrint.ToString();

@@ -54,7 +54,7 @@ public class CommandCheckoutBranchTestsUnitaires : IDisposable
         Should.Throw<GitletException>(() => _checkoutBranch.Execute(_contexte, ["checkout", "ghost"]))
             .Message.ShouldBe(ExceptionMessages.BranchNoExists);
 
-        _contexte.State.CurrentBranch().ShouldBe("main");
+        _contexte.Repository.CurrentBranch().ShouldBe("main");
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class CommandCheckoutBranchTestsUnitaires : IDisposable
         // Assert
         File.ReadAllText(_contexte.Paths.HeadFile).ShouldBe("ref: refs/heads/dev");
 
-        _contexte.State.CurrentBranch().ShouldBe("dev");
+        _contexte.Repository.CurrentBranch().ShouldBe("dev");
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class CommandCheckoutBranchTestsUnitaires : IDisposable
 
         File.ReadAllText(_contexte.Paths.BranchFile("dev")).ShouldBe(devHash);
 
-        _contexte.State.GetCommitHash().ShouldBe(devHash);
+        _contexte.Repository.GetCommitHash().ShouldBe(devHash);
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class CommandCheckoutBranchTestsUnitaires : IDisposable
         _checkoutBranch.Execute(_contexte, ["checkout", "dev"]);
 
         // Assert
-        var staging = _contexte.State.ReadStaging();
+        var staging = _contexte.Repository.ReadStaging();
 
         staging.Additions.ShouldBeEmpty();
 
@@ -222,6 +222,6 @@ public class CommandCheckoutBranchTestsUnitaires : IDisposable
         // 文件没被覆盖,分支也没切换
         File.ReadAllText(Path.Combine(_dir, "a.txt")).ShouldBe(untrackedContent);
 
-        _contexte.State.CurrentBranch().ShouldBe("main");
+        _contexte.Repository.CurrentBranch().ShouldBe("main");
     }
 }

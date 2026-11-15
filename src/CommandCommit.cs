@@ -16,18 +16,18 @@ public class CommandCommit : ICommand
             throw new GitletException(ExceptionMessages.PleaseEnterCommitMessage);
         }
 
-        if (contexte.State.ReadStaging().Additions.Count == 0 && contexte.State.ReadStaging().Removals.Count == 0)
+        if (contexte.Repository.ReadStaging().Additions.Count == 0 && contexte.Repository.ReadStaging().Removals.Count == 0)
         {
             throw new GitletException(ExceptionMessages.NoChangesAdded);
         }
         
         //读暂存区
-        var staging = contexte.State.ReadStaging();
+        var staging = contexte.Repository.ReadStaging();
         
         //读当前commit hash
-        var commitParent = contexte.State.ReadCommit();
+        var commitParent = contexte.Repository.ReadCommit();
         
-        var commitParentHash = contexte.State.GetCommitHash();
+        var commitParentHash = contexte.Repository.GetCommitHash();
         
         // var commitParentFiles = commitParent.Files; 错误写法
         var commitParentFiles = new SortedDictionary<string, string>(commitParent.Files);
@@ -63,7 +63,7 @@ public class CommandCommit : ICommand
         string commitHash = contexte.Objects.Write("commit", bytes);
         
         //5,写入 默认分支refs/heads/master
-        var currentBranch = contexte.State.CurrentBranch();
+        var currentBranch = contexte.Repository.CurrentBranch();
         File.WriteAllText(contexte.Paths.BranchFile(currentBranch), commitHash);
         
         

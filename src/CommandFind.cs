@@ -22,7 +22,7 @@ public sealed class CommandFind:ICommand
             {
                 var hashtoprint = prefixe + Path.GetFileName(file);
 
-                var CurrentCommit = contexte.State.ReadCommit(hashtoprint);
+                var CurrentCommit = contexte.Repository.ReadCommit(hashtoprint);
 
                 // var date = CurrentCommit.TimeStamp.ToLocalTime()
                 //     .ToString("ddd MMM d HH:mm:ss yyyy zzz", CultureInfo.InvariantCulture);

@@ -11,14 +11,14 @@ public class CommandMerge : ICommand
     // private readonly string _workingDirectory;
     // private readonly GitletPaths _paths;
     // private readonly ObjectStore _objects;
-    // private readonly RepositoryState _state;
+    // private readonly Repository _state;
     //
     // public GitletMergeScope(string workingDirectory)
     // {
     //     _workingDirectory = workingDirectory;
     //     _paths = new GitletPaths(workingDirectory);
     //     _objects = new ObjectStore(_paths);
-    //     _state = new RepositoryState(_paths, _objects, workingDirectory);
+    //     _state = new Repository(_paths, _objects, workingDirectory);
     // }
     public int ExpectedArgs => 2;
 
@@ -27,9 +27,9 @@ public class CommandMerge : ICommand
         var givenBranchName = args[1];
         
         //当前分支
-        var branchCurrHash = contexte.State.GetCommitHash();
+        var branchCurrHash = contexte.Repository.GetCommitHash();
         
-        var branchCurr = contexte.State.ReadCommit();
+        var branchCurr = contexte.Repository.ReadCommit();
         
         var branchCurrFiles = branchCurr.Files;
         
@@ -50,7 +50,7 @@ public class CommandMerge : ICommand
 
         var branchGivenHash = File.ReadAllText(branchGivenPath).Trim();
    
-        var branchGiven = contexte.State.ReadCommit(branchGivenHash);
+        var branchGiven = contexte.Repository.ReadCommit(branchGivenHash);
         var branchGivenFiles = branchGiven.Files;
         var branchGivenFilesNames = branchGivenFiles.Keys;
       
@@ -58,13 +58,13 @@ public class CommandMerge : ICommand
         //exceptions
         //public const string CannotMergeWithItself = "Cannot merge a branch with itself.";
         //比较分支名，而不是比较哈希。因为不同的分支，完全可以指向同一个commit
-        if (contexte.State.CurrentBranch() == givenBranchName)
+        if (contexte.Repository.CurrentBranch() == givenBranchName)
         {
             throw new GitletException(ExceptionMessages.CannotMergeWithItself);
         }
         
         //staging area not empty暂存区有文件
-        if (contexte.State.ReadStaging().Additions.Count != 0 || contexte.State.ReadStaging().Removals.Count != 0)
+        if (contexte.Repository.ReadStaging().Additions.Count != 0 || contexte.Repository.ReadStaging().Removals.Count != 0)
         {
 
             throw new GitletException(ExceptionMessages.UncommittedChanges);
@@ -72,9 +72,9 @@ public class CommandMerge : ICommand
 
         
         //split point
-        var splitPoint = contexte.State.FindSplitPointBfs(branchCurrHash, branchGivenHash);
+        var splitPoint = contexte.Repository.FindSplitPointBfs(branchCurrHash, branchGivenHash);
         
-        var splitPointCommit = contexte.State.ReadCommit(splitPoint);
+        var splitPointCommit = contexte.Repository.ReadCommit(splitPoint);
         
         var splitPointFiles = splitPointCommit.Files;
         
@@ -154,7 +154,7 @@ public class CommandMerge : ICommand
                 {
                     //冲突conflit
                     //规则3:给定和当前都改了，而且改的不一样
-                    contexte.State.WriteConflict(name, fileCurrContent, fileGivenContent,files);
+                    contexte.Repository.WriteConflict(name, fileCurrContent, fileGivenContent,files);
                     hasConflits = true;
                     //throw new GitletException(ExceptionMessages.MergeConflict);
                     
@@ -192,7 +192,7 @@ public class CommandMerge : ICommand
                 if (fileGivenContent != fileSplitPointContent)
                 {
                  
-                    contexte.State.WriteConflict(name, null, fileGivenContent, files);    // 当前那边是 null
+                    contexte.Repository.WriteConflict(name, null, fileGivenContent, files);    // 当前那边是 null
                     hasConflits = true;
                     
                     //throw new GitletException(ExceptionMessages.MergeConflict);
@@ -242,7 +242,7 @@ public class CommandMerge : ICommand
                     {
                         //冲突conflit
                        
-                        contexte.State.WriteConflict(name, branchCurrFiles[name], branchGivenFiles[name], files);
+                        contexte.Repository.WriteConflict(name, branchCurrFiles[name], branchGivenFiles[name], files);
                         hasConflits = true;
                         //throw new GitletException(ExceptionMessages.MergeConflict);
                         
@@ -259,7 +259,7 @@ public class CommandMerge : ICommand
         //create merge commit
         // 1. 造 commit 对象
         
-        var currentBranchName = contexte.State.CurrentBranch();
+        var currentBranchName = contexte.Repository.CurrentBranch();
         
         var mergeCommit = new Commit
         {

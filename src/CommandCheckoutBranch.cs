@@ -18,7 +18,7 @@ public sealed  class CommandCheckoutBranch :ICommand
         }
         
         //检查分支是不是当前分支
-        var currentBranch = contexte.State.CurrentBranch();
+        var currentBranch = contexte.Repository.CurrentBranch();
         if(branchName == currentBranch)
         {
             throw new GitletException(ExceptionMessages.ALreadyOnTheBranch);
@@ -26,13 +26,13 @@ public sealed  class CommandCheckoutBranch :ICommand
         
         
         //检查是否有未跟踪文件
-        var commitCurr = contexte.State.ReadCommit();
+        var commitCurr = contexte.Repository.ReadCommit();
         //计算目标branch的哈希
         var branchPath = contexte.Paths.BranchFile(branchName);          
         
         var targetHash = File.ReadAllText(branchPath).Trim();    
         
-        var target = contexte.State.ReadCommit(targetHash);
+        var target = contexte.Repository.ReadCommit(targetHash);
         
         foreach (var fileName in target.Files.Keys)
         {
@@ -70,7 +70,7 @@ public sealed  class CommandCheckoutBranch :ICommand
         File.WriteAllText(contexte.Paths.HeadFile, $"ref: refs/heads/{branchName}");
         Console.WriteLine($"On the branch {branchName} now");
         // 清空暂存区
-        var staging = contexte.State.ReadStaging();
+        var staging = contexte.Repository.ReadStaging();
         staging.Additions.Clear();
         staging.Removals.Clear();
         File.WriteAllText(contexte.Paths.StagingFile, JsonSerializer.Serialize(staging));

@@ -16,7 +16,7 @@ public sealed class CommandBranch: ICommand
             
         }
         //sinon
-        var commitCurrHash = contexte.State.GetCommitHash();
+        var commitCurrHash = contexte.Repository.GetCommitHash();
         //public string RefHeadDirec => Path.Combine(GitletDir, "refs", "heads");
         File.WriteAllText(contexte.Paths.BranchFile(fileName), commitCurrHash);
         //Console.WriteLine("New branch created: " + branchName);

@@ -9,7 +9,7 @@ public sealed class CommandCheckoutFile :ICommand
     public string Execute(GitletContexte contexte, string[] args)
     {
         var fileName = args[2];
-        var commitCurr = contexte.State.ReadCommit();
+        var commitCurr = contexte.Repository.ReadCommit();
         
         if (!commitCurr.Files.TryGetValue(fileName, out string blobHash))//参见add,如果存在就返回他的hash，不存在就抛异常
         {
