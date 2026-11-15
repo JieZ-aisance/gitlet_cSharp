@@ -2,13 +2,13 @@ using Shouldly;
 
 namespace Gitlet.Tests.IntegrationTests;
 
-public class GitletMergeScopeIntegrationTests : IDisposable
+public class CommandMergeTestsIntegration : IDisposable
 {
 
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "gitlet-merge-cli-" + Guid.NewGuid());
 
     //constructor
-    public GitletMergeScopeIntegrationTests()
+    public CommandMergeTestsIntegration()
     {
         Directory.CreateDirectory(_dir);
     }

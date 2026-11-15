@@ -4,42 +4,45 @@ using System.Globalization;
 using Microsoft.VisualBasic;
 
 
-namespace Gitlet;
+namespace Gitlet.Commands;
 
-public class GitletMergeScope
+public class CommandMerge : ICommand
 {
-    private readonly string _workingDirectory;
-    private readonly GitletPaths _paths;
-    private readonly ObjectStore _objects;
-    private readonly RepositoryState _state;
-    
-    public GitletMergeScope(string workingDirectory)
-    {
-        _workingDirectory = workingDirectory;
-        _paths = new GitletPaths(workingDirectory);
-        _objects = new ObjectStore(_paths);
-        _state = new RepositoryState(_paths, _objects, workingDirectory);
-    }
+    // private readonly string _workingDirectory;
+    // private readonly GitletPaths _paths;
+    // private readonly ObjectStore _objects;
+    // private readonly Repository _state;
+    //
+    // public GitletMergeScope(string workingDirectory)
+    // {
+    //     _workingDirectory = workingDirectory;
+    //     _paths = new GitletPaths(workingDirectory);
+    //     _objects = new ObjectStore(_paths);
+    //     _state = new Repository(_paths, _objects, workingDirectory);
+    // }
+    public int ExpectedArgs => 2;
 
-    public void GitletMerge(string givenBranchName)
+    public string Execute(GitletContexte contexte, string[] args)
     {
-        //当前分支
-        var branchCurrHash = _state.GetCommitHash();
+        var givenBranchName = args[1];
         
-        var branchCurr = _state.ReadCommit();
+        //当前分支
+        var branchCurrHash = contexte.Repository.GetCommitHash();
+        
+        var branchCurr = contexte.Repository.ReadCommit();
+        
         var branchCurrFiles = branchCurr.Files;
         
         var branchCurrFilesNames = branchCurrFiles.Keys;
         
-       // var branchCurrFilesContents = branchCurrFiles.Values;
-        
+
         //给定分支
         //拼路径
-        var branchGivenPath = _paths.BranchFile(givenBranchName);
+        var branchGivenPath = contexte.Paths.BranchFile(givenBranchName);
              
         //如果给定分支不存在，会报错
     
-        if (!_objects.Exists("branch", branchGivenPath))
+        if (!contexte.Objects.Exists("branch", branchGivenPath))
         {
             throw new GitletException(ExceptionMessages.BranchNoExists);
         }
@@ -47,7 +50,7 @@ public class GitletMergeScope
 
         var branchGivenHash = File.ReadAllText(branchGivenPath).Trim();
    
-        var branchGiven = _state.ReadCommit(branchGivenHash);
+        var branchGiven = contexte.Repository.ReadCommit(branchGivenHash);
         var branchGivenFiles = branchGiven.Files;
         var branchGivenFilesNames = branchGivenFiles.Keys;
       
@@ -55,13 +58,13 @@ public class GitletMergeScope
         //exceptions
         //public const string CannotMergeWithItself = "Cannot merge a branch with itself.";
         //比较分支名，而不是比较哈希。因为不同的分支，完全可以指向同一个commit
-        if (_state.CurrentBranch() == givenBranchName)
+        if (contexte.Repository.CurrentBranch() == givenBranchName)
         {
             throw new GitletException(ExceptionMessages.CannotMergeWithItself);
         }
         
         //staging area not empty暂存区有文件
-        if (_state.ReadStaging().Additions.Count != 0 || _state.ReadStaging().Removals.Count != 0)
+        if (contexte.Repository.ReadStaging().Additions.Count != 0 || contexte.Repository.ReadStaging().Removals.Count != 0)
         {
 
             throw new GitletException(ExceptionMessages.UncommittedChanges);
@@ -69,9 +72,9 @@ public class GitletMergeScope
 
         
         //split point
-        var splitPoint = _state.FindSplitPointBfs(branchCurrHash, branchGivenHash);
+        var splitPoint = contexte.Repository.FindSplitPointBfs(branchCurrHash, branchGivenHash);
         
-        var splitPointCommit = _state.ReadCommit(splitPoint);
+        var splitPointCommit = contexte.Repository.ReadCommit(splitPoint);
         
         var splitPointFiles = splitPointCommit.Files;
         
@@ -92,7 +95,8 @@ public class GitletMergeScope
         // 当前分支是给定分支的祖先:快进，执行reset
         if (branchCurrHash == splitPoint)
         {
-            new Repository(_workingDirectory).GitletReset(branchGivenHash);
+            
+            new CommandReset().Execute(contexte, ["reset", branchGivenHash]);
             throw new GitletException(ExceptionMessages.FastForwarded);
         }
         
@@ -101,7 +105,7 @@ public class GitletMergeScope
 
         foreach (var name in branchGivenFilesNames)
         {
-            var path = Path.Combine(_workingDirectory, name);
+            var path = Path.Combine(contexte.WorkingDirectory, name);
             if (File.Exists(path) && !branchCurrFiles.ContainsKey(name))
             {
                 throw new GitletException(ExceptionMessages.UntrackedFileInTheWay);
@@ -131,16 +135,16 @@ public class GitletMergeScope
                 if ( fileGivenContent != fileSplitPointContent  && fileCurrContent == fileSplitPointContent )
                 {
                     //规则1:在给定分支中被修改，在当前分支中没有被修改的，应该改为他们在给定分支中的版本，
-                    var content = _objects.Read("blob", fileGivenContent);
-                    File.WriteAllBytes(Path.Combine(_workingDirectory, name), content);
+                    var content = contexte.Objects.Read("blob", fileGivenContent);
+                    File.WriteAllBytes(Path.Combine(contexte.WorkingDirectory, name), content);
                     files[name] = fileGivenContent;
                 }
 
                 if (fileGivenContent == fileSplitPointContent && fileCurrContent != fileSplitPointContent)
                 {
                     //规则2:在当前分支被修改、给定分支没改 → 保持当前分支的版本。是以当前分支为准
-                    var content = _objects.Read("blob", fileCurrContent);
-                    File.WriteAllBytes(Path.Combine(_workingDirectory, name), content);
+                    var content =contexte.Objects.Read("blob", fileCurrContent);
+                    File.WriteAllBytes(Path.Combine(contexte.WorkingDirectory, name), content);
                     files[name] = fileCurrContent;
                 }
 
@@ -150,7 +154,7 @@ public class GitletMergeScope
                 {
                     //冲突conflit
                     //规则3:给定和当前都改了，而且改的不一样
-                    _state.WriteConflict(name, fileCurrContent, fileGivenContent,files);
+                    contexte.Repository.WriteConflict(name, fileCurrContent, fileGivenContent,files);
                     hasConflits = true;
                     //throw new GitletException(ExceptionMessages.MergeConflict);
                     
@@ -168,7 +172,7 @@ public class GitletMergeScope
                 if (fileCurrContent == fileSplitPointContent)
                 {
                     // 规则 6:当前没改,给定删了 → 删除并取消跟踪
-                    var path = Path.Combine(_workingDirectory, name);
+                    var path = Path.Combine(contexte.WorkingDirectory, name);
                     if (File.Exists(path))
                     {
                         File.Delete(path);
@@ -188,7 +192,7 @@ public class GitletMergeScope
                 if (fileGivenContent != fileSplitPointContent)
                 {
                  
-                    _state.WriteConflict(name, null, fileGivenContent, files);    // 当前那边是 null
+                    contexte.Repository.WriteConflict(name, null, fileGivenContent, files);    // 当前那边是 null
                     hasConflits = true;
                     
                     //throw new GitletException(ExceptionMessages.MergeConflict);
@@ -217,8 +221,8 @@ public class GitletMergeScope
             if (!splitPointFilesNames.Contains(name) && !branchCurrFilesNames.Contains(name))
             {
                 var blobHash = branchGivenFiles[name];
-                var content = _objects.Read("blob", blobHash);
-                File.WriteAllBytes(Path.Combine(_workingDirectory, name), content);
+                var content = contexte.Objects.Read("blob", blobHash);
+                File.WriteAllBytes(Path.Combine(contexte.WorkingDirectory, name), content);
                 files[name] = blobHash;
             }
         }
@@ -238,7 +242,7 @@ public class GitletMergeScope
                     {
                         //冲突conflit
                        
-                         _state.WriteConflict(name, branchCurrFiles[name], branchGivenFiles[name], files);
+                        contexte.Repository.WriteConflict(name, branchCurrFiles[name], branchGivenFiles[name], files);
                         hasConflits = true;
                         //throw new GitletException(ExceptionMessages.MergeConflict);
                         
@@ -255,7 +259,7 @@ public class GitletMergeScope
         //create merge commit
         // 1. 造 commit 对象
         
-        var currentBranchName = _state.CurrentBranch();
+        var currentBranchName = contexte.Repository.CurrentBranch();
         
         var mergeCommit = new Commit
         {
@@ -268,10 +272,10 @@ public class GitletMergeScope
         // 2. 序列化 → 字节 → 写进 objects,得到这个 commit 的哈希
         var json = JsonSerializer.Serialize(mergeCommit);
         var bytes = Encoding.UTF8.GetBytes(json);
-        var mergeCommitHash = _objects.Write("commit", bytes);
+        var mergeCommitHash = contexte.Objects.Write("commit", bytes);
 
         // 3. 当前分支指向这个新 commit
-        File.WriteAllText(_paths.BranchFile(currentBranchName), mergeCommitHash);
+        File.WriteAllText(contexte.Paths.BranchFile(currentBranchName), mergeCommitHash);
         
         
         //conflit最后抛异常
@@ -280,7 +284,9 @@ public class GitletMergeScope
             throw new GitletException(ExceptionMessages.MergeConflict);
         }
         
+        return $"{givenBranchName} merged into {currentBranchName} successfully." ;
+        
     }
     
-    
+  
 }
