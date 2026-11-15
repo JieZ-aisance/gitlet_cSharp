@@ -1,4 +1,5 @@
-﻿namespace Gitlet;
+﻿using Gitlet.Commands;
+namespace Gitlet;
 
 public static class Program
 {
@@ -18,67 +19,67 @@ public static class Program
                 throw new GitletException(ExceptionMessages.NotInitialized);
             }
 
-            var repo = new Repository(Directory.GetCurrentDirectory());
-            
-            var mergescope = new GitletMergeScope(Directory.GetCurrentDirectory());
+            var contexte = new GitletContexte(Directory.GetCurrentDirectory());
 
             switch (args[0])
             {
                 case "init":
                     RequireArgs(args, 1);
-                    repo.Init();
+                    new CommandInit().Execute(contexte, args);
                     break;
                 case "add":
                     RequireArgs(args, 2);
-                    repo.GitletAdd(args[1]);
+                    new CommandAdd().Execute(contexte, args);
                     break;
                 case "commit":
                     RequireArgs(args, 2);
-                    repo.GitletCommit(args[1]);
+                    new CommandCommit().Execute(contexte, args);
                     break;
                 case "rm":
                     RequireArgs(args, 2);
-                    repo.GitletDelete(args[1]);
+                    new CommandRm().Execute(contexte, args);
                     break;
                 case "log":
                     RequireArgs(args, 1);
-                    Console.Write(repo.GitletLog());
+                    // new CommandLog().Execute(contexte, args);
+                    Console.Write(new CommandLog().Execute(contexte, args));
                     break;
                 case "global-log":
                     RequireArgs(args, 1);
-                    Console.Write(repo.GitletGlobalLog());
+                    // new CommandGlobalLog().Execute(contexte, args);
+                    Console.Write(new CommandGlobalLog().Execute(contexte, args));
                     break;
                 case "find":
                     RequireArgs(args, 2);
-                    Console.Write(repo.GitletFind(args[1]));
+                    new CommandFind().Execute(contexte, args);
                     break;
                 case "branch":
                     RequireArgs(args, 2);
-                    repo.GitletBranch(args[1]);
+                    new CommandBranch().Execute(contexte, args);
                     break;
                 case "rm-branch":
                     RequireArgs(args, 2);
-                    repo.GitletRmBranch(args[1]);
+                    new CommnadRmBranch().Execute(contexte, args);
                     break;
                 case "status":
                     RequireArgs(args, 1);
-                    Console.Write(repo.GitletStatus());
+                    new CommandStatus().Execute(contexte, args);
                     break;
                 case "checkout":
                     if (args.Length == 3 && args[1] == "--")
                     {
                         // checkout -- <file>
-                        repo.GitletCheckoutFile(args[2]);
+                        new CommandCheckoutFile().Execute(contexte, args);
                     }
                     else if (args.Length == 4 && args[2] == "--")
                     {
                         // checkout <commit id> -- <file>
-                        repo.GitletCheckoutCommitFile(args[1], args[3]);
+                        new CommandCheckoutCommitFile().Execute(contexte, args);
                     }
                     else if (args.Length == 2)
                     {
                         // checkout <branch>
-                        repo.GitletCheckoutBranch(args[1]);
+                        new CommandCheckoutBranch().Execute(contexte, args);
                     }
                     else
                     {
@@ -88,12 +89,12 @@ public static class Program
                 
                 case "reset":
                     RequireArgs(args, 2);
-                    repo.GitletReset(args[1]);
+                    new CommandReset().Execute(contexte, args);
                     break;
                 
                 case "merge" :
                     RequireArgs(args, 2);
-                    mergescope.GitletMerge(args[1]);
+                    new CommandMerge().Execute(contexte, args);
                     break;
                 
                 
