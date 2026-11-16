@@ -1,7 +1,7 @@
 
 # Gitlet en C#  🇫🇷
 
-### Author: Jie ZHAO
+### Author: Jie ZHAO, recherche active un CDI/CDD.
 ### Updated: 2026-11-15
 
 - [Gitlet en C# ](#project-gitlet)
