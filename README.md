@@ -1,40 +1,60 @@
+<a id="project-gitlet"></a>
 # Gitlet en C#  🇫🇷
 
 ### Author: Jie ZHAO
 ### Updated: 2026-11-15
-### Cahier des charges du projet Gitlet: https://sp21.datastructur.es/materials/proj/proj2/proj2
-### 🇬🇧 English version is available in README.en.md.
-### 💡Pour le détail du raisonnement et des algorithmes, consultez le code de la branche `dev` ; sur la branche `main`, les commentaires ont été retirés pour garder un code propre.
-### 💡Les tests unitaires et d'intégration ont d'abord été générés sur la branche `test` avec Claude Code (CLI), en respectant mon style de code, puis relus et ajustés avant d'être fusionnés dans `dev`, et ensuite dans `main`.
-### 💡 Qualité du code : à chaque push et à chaque pull request, un workflow GitHub Actions compile le projet, exécute les tests (xUnit), mesure la couverture de code (Coverlet) et envoie le tout à SonarQube Cloud pour l'analyse statique ; la quality gate est vérifiée avant chaque fusion.
 
-### SonarQube: https://sonarcloud.io/dashboard?id=JieZ-aisance_gitlet_cShar
-### repos sur github: https://github.com/JieZ-aisance/gitlet_cSharp
+
+- [Gitlet en C# ](#project-gitlet)
+    * [Introduction](#introduction)
+    * [Démarche de développement](#demarche)
+    * [Commandes implémentées](#command))
+    * [Démarrage rapide](#demarrage)
+    * [les références et les utiles](#utiles)
+    * [Aide-mémoire des commandes](#aide-mémoire)
+    * [Smoke test(optionnnel)](#smoke-testoptionnnel)
+
 
 ====================================================================================
+<a id="introduction"></a>
+## Introduction 
 
-## Réflexion et Démarche de développement
-
-Git est l'outil de gestion de versions que les développeurs utilisent au quotidien ; qu'il s'agisse d'un projet personnel ou d'un projet en équipe, il est indispensable.
-
-Son principe de stockage repose sur l'adressage par contenu : on lit les octets du contenu d'un fichier, on en calcule le hachage, puis on utilise ce hachage comme nom pour stocker ce contenu.
-
-Ce projet implémente les fonctionnalités principales de Git en suivant le cahier des charges.
-
-Le développement se déroule en deux phases, avec des stratégies différentes : la première phase couvre toutes les commandes du cahier des charges à l'exception de `merge` ; la seconde phase sera consacrée à `merge`.
-
-**Phase 1.** J'ai d'abord conçu les classes nécessaires à Gitlet en m'inspirant de la structure de répertoires du vrai Git. Les commandes étant de complexité modérée, elles sont toutes implémentées dans `Repository`, avec une architecture plutôt plate. L'ordre de développement a été le suivant :
-
-1. implémenter toutes les fonctionnalités ;
-2. écrire le test de fumée (smoke test) ;
-3. écrire les tests unitaires et d'intégration.
-
-**Phase 2.** J'ai ensuite implémenté la commande "merge" dans "GitletMergeScope" en suivant les étapes identiques que la phase 1.
-
-**Phase 3.** Refactorisation : j'ai extrait une interface `ICommand` commune à toutes les commandes, et découpé les méthodes de `Repository` correspondant aux commandes du cahier des charges en classes dédiées, nommées `Command<NomDeLaCommande>` (par exemple `CommandAdd`, `CommandCommit`, `CommandRm`). J'ai renommé l'ancienne classe `RepositoryState` en `Repository`, un nom plus fidèle à son rôle, puis adapté les tests unitaires et d'intégration en conséquence.
+Git est l'outil de gestion de versions que les développeurs utilisent au quotidien ; qu'il s'agisse d'un projet personnel ou d'un projet en équipe, il est indispensable. Son principe de stockage repose sur l'adressage par contenu : on lit les octets du contenu d'un fichier, on en calcule le hachage, puis on utilise ce hachage comme nom pour stocker ce contenu.
+Ce projet implémente les fonctionnalités principales de Git en suivant ce [cahier des charges](https://sp21.datastructur.es/materials/proj/proj2/proj2), avec une CI GitHub Actions (build, tests, analyse SonarQube Cloud) à chaque push.
 
 
+<a id="demarche"></a>
+## Démarche de développement
 
+Le développement s'est déroulé en trois phases, chacune sur sa propre branche et fusionnée par pull request.
+
+**Phase 1. Implémenter toutes les commandes et écrire un test de fumée**
+
+Je me suis inspirée de la structure de répertoires du vrai Git.
+
+1. créer la branche `main`, puis une branche `dev` à partir de `main` pour le développement ;
+2. implémenter toutes les commandes selon le [cahier des charges](https://sp21.datastructur.es/materials/proj/proj2/proj2) ;
+3. écrire le test de fumée (`scripts/smoke_test.sh`).
+
+**Phase 2. Tests unitaires et d'intégration avec l'IA, intégration continue et qualité du code**
+
+1. créer une branche `test` à partir de `dev` ;
+2. écrire à la main un test unitaire et un test d'intégration, pour que Claude Code reprenne mon style de code, puis lui faire générer les autres tests, que j'ai relus et ajustés ;
+3. configurer SonarQube Cloud (couverture de code, quality gate) et le workflow GitHub Actions ;
+4. à chaque push, la CI compile le projet, exécute les tests et lance l'analyse SonarQube ;
+5. fusionner `test` dans `dev` par pull request, une fois la quality gate validée.
+
+**Phase 3. Refactorisation selon les principes SOLID**
+
+1. créer une branche `refactor` à partir de `dev` ;
+2. extraire une interface `ICommand` et découper la « classe Dieu » `Repository` en classes dédiées, une par commande, nommées `Command<NomDeLaCommande>` (par exemple `CommandAdd`, `CommandCommit`, `CommandRm`) ;
+3. regrouper les méthodes utilitaires dans une classe à part ;
+4. adapter les tests unitaires et d'intégration ;
+5. fusionner `refactor` dans `dev`, puis `dev` dans `main`, par pull request ;
+6. mettre à jour le README et retirer les commentaires de travail sur `main`.
+
+
+<a id="command"></a>
 ## Commandes implémentées
 
 1. `init` — Crée un nouveau dépôt Gitlet dans le répertoire courant, avec un commit initial vide sur la branche par défaut.
@@ -54,6 +74,7 @@ Le développement se déroule en deux phases, avec des stratégies différentes 
 12. `reset <id du commit>` — Ramène la branche courante et le répertoire de travail à l'état d'un commit donné, et vide l'index (l'identifiant peut être abrégé).
 13. `merge <nom de branche>` — Fusionne la branche donnée dans la branche courante et crée un commit de fusion ; les fichiers en conflit sont marqués et signalés.
 
+<a id="demarrage"></a>
 ## Démarrage rapide
 
 ### 1. Récupérer et compiler le projet
@@ -77,6 +98,14 @@ Travaillez dans un dossier séparé, afin que le dépôt `.gitlet` et les fichie
     gitlet commit "add hello"
     gitlet log
 
+
+<a id="utiles"></a>
+## Les les références et les utiles
+1. SonarQube: https://sonarcloud.io/dashboard?id=JieZ-aisance_gitlet_cSharp
+2. Gitlet project specification: https://sp21.datastructur.es/materials/proj/proj2/proj2
+
+
+<a id="aide-memoire"></a>
 ## Aide-mémoire des commandes
 
 Depuis un dossier de travail situé en dehors du code source (voir ci-dessus) :
