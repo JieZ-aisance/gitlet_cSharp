@@ -1,9 +1,8 @@
-<a id="project-gitlet"></a>
+
 # Gitlet en C#  🇫🇷
 
 ### Author: Jie ZHAO
 ### Updated: 2026-11-15
-
 
 - [Gitlet en C# ](#project-gitlet)
     * [Introduction](#introduction)
@@ -11,11 +10,7 @@
     * [Commandes implémentées](#command))
     * [Démarrage rapide](#demarrage)
     * [les références et les utiles](#utiles)
-    * [Aide-mémoire des commandes](#aide-mémoire)
-    * [Smoke test(optionnnel)](#smoke-testoptionnnel)
 
-
-====================================================================================
 <a id="introduction"></a>
 ## Introduction 
 
